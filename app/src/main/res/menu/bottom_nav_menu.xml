@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_home"
+        android:title="الرئيسية" />
+    <item
+        android:id="@+id/vacationFragment"
+        android:icon="@drawable/ic_vacation"
+        android:title="الإجازات" />
+    <item
+        android:id="@+id/excuseFragment"
+        android:icon="@drawable/ic_excuse"
+        android:title="الأعذار" />
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_profile"
+        android:title="حسابي" />
+</menu>

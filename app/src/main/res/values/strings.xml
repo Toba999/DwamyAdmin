@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DwamyAdmin</string>
+    <string name="app_logo">app Logo</string>
+    <string name="avatar">Avatar</string>
+    <string name="leave">leave</string>
+    <string name="arrow">arrow</string>
+    <string name="success_icon">success\n</string>
+</resources>
