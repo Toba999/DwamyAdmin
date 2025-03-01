@@ -31,11 +31,26 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply{
-            vacationCard.setOnClickListener{
+            addEmpBtn.setOnClickListener {
+                // to add employee fragment
+                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
+            }
+
+            deleteEmpBtn.setOnClickListener {
+                // to delete employee fragment
+                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
+            }
+            reportsCard.setOnClickListener{
+                // to reports fragment
               findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
             }
-            excuseCard.setOnClickListener{
+            execuseBtn.setOnClickListener{
+                // to execuses requeset fragment
                 findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToExcuseRequestFragment())
+            }
+            vacBtn.setOnClickListener{
+                // to vacation requeset fragment
+                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
             }
         }
 
