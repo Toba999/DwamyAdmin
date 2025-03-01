@@ -39,6 +39,14 @@ class LoginFragment : Fragment() {
 
             findNavController().navigate(R.id.containerFragment, null, navOptions)
         }
+        binding.goToRegister.setOnClickListener {
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.LoginFragment, true)
+                .setLaunchSingleTop(true)
+                .build()
+
+            findNavController().navigate(R.id.registerFragment, null, navOptions)
+        }
     }
 
     override fun onDestroyView() {
