@@ -45,12 +45,10 @@ class HomeFragment : Fragment() {
               findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
             }
             execuseBtn.setOnClickListener{
-                // to execuses requeset fragment
-                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToExcuseRequestFragment())
+                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToExcuseFragment())
             }
             vacBtn.setOnClickListener{
-                // to vacation requeset fragment
-                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
+                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationFragment())
             }
         }
 
