@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="12dp"
@@ -86,18 +87,72 @@
             app:layout_constraintTop_toBottomOf="@id/title"
             android:layout_marginEnd="4dp"
             android:layout_marginTop="8dp"/>
+        <FrameLayout
+            android:id="@+id/avatar"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/circle_border"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date_from"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp">
 
-        <!-- Status -->
+            <ImageView
+                android:id="@+id/avatarImage"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:contentDescription="@string/avatar"
+                android:src="@drawable/avatar_img" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/vacAplName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="عبدالله محمد"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/avatar"
+            app:layout_constraintEnd_toStartOf="@+id/avatar"
+            app:layout_constraintTop_toTopOf="@+id/avatar"
+            app:layout_constraintBottom_toTopOf="@+id/acceptVacBtn"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/acceptVacBtn"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="قبول"
+            android:textColor="@color/white"
+            app:backgroundTint="#0C9700"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/declineVacBtn"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="رفض"
+            app:backgroundTint="#CE0000"
+            android:layout_marginEnd="20dp"
+            app:cornerRadius="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/acceptVacBtn"
+            app:layout_constraintTop_toTopOf="@+id/acceptVacBtn" />
         <TextView
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="قيد المراجعة"
-            android:textSize="16sp"
             android:layout_marginStart="8dp"
+            android:text="قيد المراجعة"
             android:textColor="@android:color/darker_gray"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date_from"
-            android:layout_marginTop="8dp"/>
+            android:textSize="16sp"
+            android:layout_marginVertical="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

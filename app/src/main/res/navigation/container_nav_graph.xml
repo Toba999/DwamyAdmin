@@ -26,6 +26,12 @@
         <action
             android:id="@+id/action_homeFragment_to_excuseRequestFragment"
             app:destination="@id/excuseRequestFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_vacationFragment"
+            app:destination="@id/vacationFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_excuseFragment"
+            app:destination="@id/excuseFragment" />
     </fragment>
     <fragment
         android:id="@+id/vacationFragment"
