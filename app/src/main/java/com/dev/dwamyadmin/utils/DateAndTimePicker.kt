@@ -6,6 +6,7 @@ import android.content.Context
 import android.widget.EditText
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 object DateAndTimePicker {
@@ -45,5 +46,15 @@ object DateAndTimePicker {
         )
 
         timePickerDialog.show()
+    }
+
+    fun Long.toFormattedDate(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale("ar"))
+        return sdf.format(Date(this * 1000)) // Convert seconds to milliseconds
+    }
+
+    fun Long.toDayOfWeek(): String {
+        val sdf = SimpleDateFormat("EEEE", Locale("ar"))
+        return sdf.format(Date(this * 1000)) // Convert seconds to milliseconds
     }
 }

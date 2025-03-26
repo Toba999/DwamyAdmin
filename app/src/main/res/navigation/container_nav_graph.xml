@@ -25,7 +25,7 @@
             app:destination="@id/registerEmployeeFragment" />
         <action
             android:id="@+id/action_homeFragment_to_deleteEmployeeFragment"
-            app:destination="@id/excuseRequestFragment" />
+            app:destination="@id/registerEmployeeFragment" />
         <action
             android:id="@+id/action_homeFragment_to_vacationFragment"
             app:destination="@id/vacationFragment" />
@@ -38,16 +38,6 @@
         android:name="com.dev.dwamyadmin.features.vacation.presentation.view.VacationFragment"
         android:label="fragment_vacation"
         tools:layout="@layout/fragment_vacation" />
-    <fragment
-        android:id="@+id/excuseRequestFragment"
-        android:name="com.dev.dwamyadmin.features.excuseRequest.presentation.view.ExcuseRequestFragment"
-        android:label="fragment_excuse_request"
-        tools:layout="@layout/fragment_excuse_request" />
-    <fragment
-        android:id="@+id/vacationRequestFragment"
-        android:name="com.dev.dwamyadmin.features.vacationRequest.presentation.view.VacationRequestFragment"
-        android:label="fragment_vacation_request"
-        tools:layout="@layout/fragment_vacation_request" />
 
     <dialog
         android:id="@+id/successDialogFragment"
@@ -70,7 +60,14 @@
             android:name="isAdmin"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_registerEmployeeFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.dev.dwamyadmin.features.mapScreen.MapFragment"
+        android:label="MapFragment" />
 
 
 </navigation>

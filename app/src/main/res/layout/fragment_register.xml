@@ -14,13 +14,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         <TextView
+            android:id="@+id/registerTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@+id/registerBackBtn"
             app:layout_constraintBottom_toBottomOf="@+id/registerBackBtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="تسجيل حساب"
+            android:text="تسجيل موظف"
             android:gravity="center"
             android:textSize="22sp"
             android:textColor="@color/black"

@@ -18,6 +18,8 @@ googleServices = "4.4.2"
 lifecycleAndroid = "2.8.7"
 
 
+playServicesLocationVersion = "21.0.1"
+playServicesMaps = "18.0.1"
 shimmer = "0.5.0"
 coil = "2.4.0"
 
@@ -64,6 +66,8 @@ androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-view
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleAndroid" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleAndroid" }
 
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocationVersion" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }

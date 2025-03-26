@@ -2,6 +2,10 @@ package com.dev.dwamyadmin.data.repo
 
 import com.dev.dwamyadmin.domain.models.Admin
 import com.dev.dwamyadmin.domain.models.Employee
+import com.dev.dwamyadmin.domain.models.ExcuseRequest
+import com.dev.dwamyadmin.domain.models.ExcuseStatus
+import com.dev.dwamyadmin.domain.models.LeaveRequest
+import com.dev.dwamyadmin.domain.models.LeaveStatus
 import com.dev.dwamyadmin.domain.repo.FireBaseRepo
 import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,6 +17,8 @@ class FireBaseRepoImpl @Inject constructor(
     private val sharedPrefManager: SharedPrefManager
 ) : FireBaseRepo {
 
+    private val leaveRequestsCollection = firestore.collection("leave_requests")
+    private val excuseRequestsCollection = firestore.collection("excuse_requests")
     private val adminsCollection = firestore.collection("admins")
     private val employeesCollection = firestore.collection("employees")
 
@@ -69,6 +75,49 @@ class FireBaseRepoImpl @Inject constructor(
                 }
             }
             false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+    override suspend fun getLeaveRequestsByAdmin(adminId: String): List<LeaveRequest> {
+        return try {
+            val querySnapshot = leaveRequestsCollection.whereEqualTo("adminId", adminId).get().await()
+            querySnapshot.documents.mapNotNull { it.toObject(LeaveRequest::class.java) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    override suspend fun getExcuseRequestsByAdmin(adminId: String): List<ExcuseRequest> {
+        return try {
+            val querySnapshot = excuseRequestsCollection.whereEqualTo("adminId", adminId).get().await()
+            querySnapshot.documents.mapNotNull { it.toObject(ExcuseRequest::class.java) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    override suspend fun updateLeaveRequestStatus(requestId: String, status: LeaveStatus): Boolean {
+        return try {
+            leaveRequestsCollection.document(requestId)
+                .update("status", status.name)
+                .await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    override suspend fun updateExcuseRequestStatus(requestId: String, status: ExcuseStatus): Boolean {
+        return try {
+            excuseRequestsCollection.document(requestId)
+                .update("status", status.name)
+                .await()
+            true
         } catch (e: Exception) {
             e.printStackTrace()
             false

@@ -105,7 +105,8 @@ dependencies {
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation (libs.androidx.biometric)
-
+    implementation (libs.play.services.maps)
+    implementation (libs.play.services.location)
 
     //shimmer
     implementation(libs.shimmer)

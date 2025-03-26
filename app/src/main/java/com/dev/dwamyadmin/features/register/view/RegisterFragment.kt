@@ -1,13 +1,20 @@
 package com.dev.dwamyadmin.features.register.view
 
+import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -41,6 +48,7 @@ class RegisterFragment : Fragment() {
     private val selectedDays = BooleanArray(7)
     private val daysOfWeek = arrayOf("الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت")
     private var adminId : String? = null
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     @Inject
     lateinit var sharedPrefManager: SharedPrefManager
@@ -74,6 +82,11 @@ class RegisterFragment : Fragment() {
         setupUI(isAdmin)
         setupListeners(isAdmin)
         observeViewModel()
+        parentFragmentManager.setFragmentResultListener("locationRequestKey", viewLifecycleOwner) { _, bundle ->
+            val latitude = bundle.getDouble("latitude")
+            val longitude = bundle.getDouble("longitude")
+            binding.adminLocation.setText("Selected: $latitude, $longitude")
+        }
     }
 
     private fun setupUI(isAdmin: Boolean) {
@@ -84,6 +97,7 @@ class RegisterFragment : Fragment() {
             binding.adminLocation.visibility = View.GONE
             binding.uploadImgButton.visibility = View.GONE
             binding.uploadedImage.visibility = View.GONE
+            binding.registerTitle.text = "تسجيل حساب"
         }
     }
 
@@ -94,6 +108,9 @@ class RegisterFragment : Fragment() {
 
         binding.workDays.setOnClickListener {
             showDaysPickerDialog()
+        }
+        binding.adminLocation.setOnClickListener {
+            checkLocationPermissions()
         }
 
         binding.timeRangeSlider.setValues(9f, 17f)
@@ -133,6 +150,82 @@ class RegisterFragment : Fragment() {
             }
         }
     }
+
+    private fun checkLocationPermissions() {
+        val permission = Manifest.permission.ACCESS_FINE_LOCATION
+
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED -> {
+                checkGPSAndNavigate()
+            }
+
+            shouldShowRequestPermissionRationale(permission) -> {
+                showPermissionRationaleDialog()
+            }
+
+            else -> {
+                requestPermissions(arrayOf(permission), LOCATION_PERMISSION_REQUEST_CODE)
+            }
+        }
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkGPSAndNavigate()
+            } else {
+                showPermissionDeniedDialog()
+            }
+        }
+    }
+
+    private fun checkGPSAndNavigate() {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+        if (isGPSEnabled) {
+            findNavController().navigate(R.id.action_registerEmployeeFragment_to_mapFragment)
+        } else {
+            showEnableGPSDialog()
+        }
+    }
+
+    private fun showPermissionRationaleDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("إذن الموقع مطلوب")
+            .setMessage("يرجى منح إذن الموقع لاختيار الموقع.")
+            .setPositiveButton("حسنًا") { _, _ ->
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            }
+            .setNegativeButton("إلغاء", null)
+            .show()
+    }
+    private fun showPermissionDeniedDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("إذن الموقع مرفوض")
+            .setMessage("لا يمكن اختيار الموقع بدون الإذن. يرجى منحه من الإعدادات.")
+            .setPositiveButton("فتح الإعدادات") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.parse("package:" + requireContext().packageName)
+                startActivity(intent)
+            }
+            .setNegativeButton("إلغاء", null)
+            .show()
+    }
+
+    private fun showEnableGPSDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("تشغيل الـ GPS")
+            .setMessage("يرجى تفعيل الـ GPS لاختيار الموقع.")
+            .setPositiveButton("فتح الإعدادات") { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton("إلغاء", null)
+            .show()
+    }
+
+
 
     private fun validateInputs(): Boolean {
         var isValid = true

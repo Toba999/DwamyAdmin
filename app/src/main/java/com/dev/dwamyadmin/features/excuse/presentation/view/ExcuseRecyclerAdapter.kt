@@ -5,6 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.dwamyadmin.databinding.ExcuseItemBinding
+import com.dev.dwamyadmin.domain.models.ExcuseRequest
+import com.dev.dwamyadmin.domain.models.LeaveRequest
+import com.dev.dwamyadmin.domain.models.toExcuseItem
+import com.dev.dwamyadmin.domain.models.toVacationItem
 
 class ExcuseAdapter(
     private val excuseItems: MutableList<ExcuseItem>, // Use MutableList for dynamic updates
@@ -74,9 +78,16 @@ class ExcuseAdapter(
             notifyItemChanged(position)
         }
     }
+    fun updateList(newList: List<ExcuseRequest>) {
+        excuseItems.clear()
+        val mappedList = newList.map{it.toExcuseItem()}
+        excuseItems.addAll(mappedList)
+        notifyDataSetChanged()
+    }
 }
 
 data class ExcuseItem(
+    val id: String,
     val timestamp: String,
     val title: String,
     val fromTime: String,
