@@ -22,6 +22,11 @@
         android:id="@+id/registerFragment"
         android:name="com.dev.dwamyadmin.features.register.view.RegisterFragment"
         android:label="fragment_register"
-        tools:layout="@layout/fragment_register" />
+        tools:layout="@layout/fragment_register" >
+        <argument
+            android:name="isAdmin"
+            app:argType="boolean"
+            android:defaultValue="true" />
+    </fragment>
 
 </navigation>

@@ -79,6 +79,8 @@ firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx"
 firebase-database-ktx = { module = "com.google.firebase:firebase-database" }
 firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }
 firebase-crashlytics-ktx = { module = "com.google.firebase:firebase-crashlytics-ktx" }
+firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" } # Add this line
+
 
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidNavigation" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidNavigation" }

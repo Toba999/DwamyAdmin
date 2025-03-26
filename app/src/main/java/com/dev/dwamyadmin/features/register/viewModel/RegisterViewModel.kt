@@ -1,10 +1,74 @@
 package com.dev.dwamyadmin.features.register.viewModel
 
+import android.widget.ImageView
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dev.dwamyadmin.domain.models.Admin
+import com.dev.dwamyadmin.domain.models.Employee
+import com.dev.dwamyadmin.domain.repo.FireBaseRepo
+import com.dev.dwamyadmin.features.register.models.RegisterState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor() : ViewModel() {
-    // TODO: Implement the ViewModel
+class RegisterViewModel @Inject constructor(
+    private val repo: FireBaseRepo
+) : ViewModel() {
+
+    private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
+    val registerState: StateFlow<RegisterState> = _registerState.asStateFlow()
+
+    fun registerAdmin(name: String, email: String, password: String) {
+        viewModelScope.launch {
+            _registerState.value = RegisterState.Loading
+            try {
+                val success =
+                    repo.registerAdmin(Admin(name = name, email = email, password = password))
+                _registerState.value =
+                    if (success) RegisterState.Success("Admin registered") else RegisterState.Failure(
+                        "Registration failed"
+                    )
+            } catch (e: Exception) {
+                _registerState.value = RegisterState.Failure(e.message ?: "Error")
+            }
+        }
+    }
+
+    fun registerEmployee(
+        name: String,
+        email: String,
+        password: String,
+        adminId: String,
+        workDays: String,
+        startTime: Int,
+        endTime: Int,
+        imageUri: String
+    ) {
+        viewModelScope.launch {
+            _registerState.value = RegisterState.Loading
+            try {
+                val success = repo.registerEmployee(
+                    Employee(
+                        name = name,
+                        email = email,
+                        password = password,
+                        adminId = adminId,
+                        workDays = workDays,
+                        startTime = startTime,
+                        endTime = endTime
+                    )
+                )
+                _registerState.value =
+                    if (success) RegisterState.Success("Employee registered") else RegisterState.Failure(
+                        "Registration failed"
+                    )
+            } catch (e: Exception) {
+                _registerState.value = RegisterState.Failure(e.message ?: "Error")
+            }
+        }
+    }
 }

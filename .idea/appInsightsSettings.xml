@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.dev.dwamyadmin" />
+                  <option name="mobileSdkAppId" value="1:847730338336:android:e541a433664eb3cbd76a45" />
+                  <option name="projectId" value="dwamy-7727b" />
+                  <option name="projectNumber" value="847730338336" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

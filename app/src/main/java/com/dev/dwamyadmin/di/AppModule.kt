@@ -1,11 +1,15 @@
 package com.dev.dwamyadmin.di
 
+import android.content.Context
 import com.dev.dwamyadmin.data.repo.FireBaseRepoImpl
 import com.dev.dwamyadmin.domain.repo.FireBaseRepo
+import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -15,9 +19,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseDatabase(): FirebaseDatabase = FirebaseDatabase.getInstance()
+    fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
 
     @Provides
     @Singleton
-    fun provideMyRepository(database: FirebaseDatabase): FireBaseRepo = FireBaseRepoImpl(database)
+    fun provideSharedPrefManager(@ApplicationContext context: Context): SharedPrefManager =
+        SharedPrefManager(context)
+
+    @Provides
+    @Singleton
+    fun provideFireBaseRepo(firestore: FirebaseFirestore, sharedPrefManager: SharedPrefManager): FireBaseRepo {
+        return FireBaseRepoImpl(firestore, sharedPrefManager)
+    }
 }
