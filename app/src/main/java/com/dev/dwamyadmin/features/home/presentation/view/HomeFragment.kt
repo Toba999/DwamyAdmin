@@ -33,16 +33,16 @@ class HomeFragment : Fragment() {
         binding.apply{
             addEmpBtn.setOnClickListener {
                 // to add employee fragment
-                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
+                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToAddEmployeeFragment(false))
             }
 
             deleteEmpBtn.setOnClickListener {
                 // to delete employee fragment
-                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
+//                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
             }
             reportsCard.setOnClickListener{
                 // to reports fragment
-              findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
+//              findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
             }
             execuseBtn.setOnClickListener{
                 findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToExcuseFragment())

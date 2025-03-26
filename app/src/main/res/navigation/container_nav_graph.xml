@@ -21,10 +21,10 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_homeFragment_to_vacationRequestFragment"
-            app:destination="@id/vacationRequestFragment" />
+            android:id="@+id/action_homeFragment_to_addEmployeeFragment"
+            app:destination="@id/registerEmployeeFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_excuseRequestFragment"
+            android:id="@+id/action_homeFragment_to_deleteEmployeeFragment"
             app:destination="@id/excuseRequestFragment" />
         <action
             android:id="@+id/action_homeFragment_to_vacationFragment"
@@ -62,6 +62,15 @@
         android:label="Logout Dialog"
         tools:layout="@layout/fragment_logout_dialog"
         android:theme="@style/Theme.MaterialComponents.Light.Dialog.Alert"/>
+    <fragment
+        android:id="@+id/registerEmployeeFragment"
+        android:name="com.dev.dwamyadmin.features.register.view.RegisterFragment"
+        android:label="RegisterFragment" >
+        <argument
+            android:name="isAdmin"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
 
 
 </navigation>

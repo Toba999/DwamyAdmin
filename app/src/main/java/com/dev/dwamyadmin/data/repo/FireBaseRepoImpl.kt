@@ -64,7 +64,6 @@ class FireBaseRepoImpl @Inject constructor(
             if (!querySnapshot.isEmpty) {
                 val admin = querySnapshot.documents[0].toObject(Admin::class.java)
                 if (admin != null && admin.password == password) {
-                    // Save logged-in admin details
                     sharedPrefManager.setAdminData(admin.id, admin.name, admin.email)
                     return true
                 }
