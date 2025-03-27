@@ -1,5 +1,9 @@
 package com.dev.dwamyadmin.domain.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Employee(
     val id: String = "",  // Firestore ID
     val adminId: String = "",  // Links employee to their admin
@@ -13,4 +17,4 @@ data class Employee(
     val profession : String = "",
     val startTime: Int = 9,  // Work start time (24-hour format)
     val endTime: Int = 17   // Work end time (24-hour format)
-)
+) : Parcelable

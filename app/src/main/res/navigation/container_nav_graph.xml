@@ -78,7 +78,20 @@
         android:id="@+id/employeeListFragment"
         android:name="com.dev.dwamyadmin.features.employeesList.presentation.view.EmployeeListFragment"
         android:label="fragment_employee_list"
-        tools:layout="@layout/fragment_employee_list" />
+        tools:layout="@layout/fragment_employee_list" >
+        <action
+            android:id="@+id/action_employeeListFragment_to_deleteDialogFragment"
+            app:destination="@id/deleteDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/deleteDialogFragment"
+        android:name="com.dev.dwamyadmin.features.dialogs.DeleteDialogFragment"
+        android:label="DeleteDialogFragment" >
+        <argument
+            android:name="employee"
+            app:argType="com.dev.dwamyadmin.domain.models.Employee"
+            />
+    </dialog>
 
 
 </navigation>

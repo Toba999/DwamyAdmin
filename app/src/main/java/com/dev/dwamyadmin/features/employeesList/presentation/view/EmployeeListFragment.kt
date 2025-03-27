@@ -1,7 +1,6 @@
 package com.dev.dwamyadmin.features.employeesList.presentation.view
 
 import android.os.Bundle
-import android.util.Log.e
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import com.dev.dwamyadmin.databinding.FragmentEmployeeListBinding
 import com.dev.dwamyadmin.domain.models.Employee
 import com.dev.dwamyadmin.features.employeesList.presentation.viewModel.EmployeesViewModel
 import com.dev.dwamyadmin.utils.SharedPrefManager
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -56,12 +54,11 @@ class EmployeeListFragment : Fragment() {
             mutableListOf(),
             onDeleteClickListener = { employee -> handleDeleteClick(employee) }
         )
-
         binding.employeeRv.layoutManager = LinearLayoutManager(requireContext())
         binding.employeeRv.adapter = adapter
     }
     private fun handleDeleteClick(employee: Employee) {
-        viewModel.deleteEmployee(employee.id)
+        findNavController().navigate(EmployeeListFragmentDirections.actionEmployeeListFragmentToDeleteDialogFragment(employee))
     }
     private fun showLoading(isShown: Boolean) {
         binding.loadingView.root.isVisible = isShown
@@ -84,30 +81,7 @@ class EmployeeListFragment : Fragment() {
                 }
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.deleteEmployeeResult.collect { success ->
-                success?.let {
-                    if (success) {
-                        showSnackBar("تم مسح الموظف بنجاح", false)
-                    } else {
-                        showSnackBar("فشل مسح الموظف", true)
-                    }
-                }
-            }
-        }
     }
-
-    private fun showSnackBar(message: String, isError: Boolean) {
-        val snackBar = Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
-        val snackBarView = snackBar.view
-        if (isError) {
-            snackBarView.setBackgroundColor(resources.getColor(android.R.color.holo_red_dark, null))
-        } else {
-            snackBarView.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark, null))
-        }
-        snackBar.show()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

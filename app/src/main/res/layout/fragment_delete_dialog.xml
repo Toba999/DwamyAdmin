@@ -13,13 +13,13 @@
     <ImageView
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:src="@drawable/ic_warning"
+        android:src="@drawable/ic_delete"
         android:contentDescription="@string/success_icon" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="هل أنت متأكد من أنك تريد تسجيل الخروج"
+        android:text="هل أنت متأكد من أنك تريد مسح الموظف"
         android:textSize="18sp"
         android:textColor="@color/black"
         android:paddingTop="10dp"/>
@@ -46,7 +46,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="نعم"
+            android:text="مسح"
             android:textStyle="bold"
             app:cornerRadius="10dp"
             app:strokeWidth="2dp"
