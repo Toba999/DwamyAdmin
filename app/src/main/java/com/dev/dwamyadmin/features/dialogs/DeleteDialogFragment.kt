@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -18,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class DeleteDialogFragment : DialogFragment() {
 
-    private val viewModel: EmployeesViewModel by viewModels()
+    private val viewModel: EmployeesViewModel by activityViewModels()
     private var _binding: FragmentDeleteDialogBinding? = null
     private val binding get() = _binding!!
     private val args: DeleteDialogFragmentArgs by navArgs()
@@ -47,6 +49,9 @@ class DeleteDialogFragment : DialogFragment() {
         binding.apply {
             btnOk.setOnClickListener {
                 viewModel.deleteEmployee(args.employee.id)
+                setFragmentResult("delete_request", Bundle().apply {
+                    putBoolean("isDeleted", true)
+                })
                 dismiss()
             }
             btnCancel.setOnClickListener {
@@ -85,6 +90,4 @@ class DeleteDialogFragment : DialogFragment() {
             addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         }
     }
-
-
 }

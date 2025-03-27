@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -47,6 +48,12 @@ class EmployeeListFragment : Fragment() {
         }
         val adminId = sharedPrefManager.getAdminId()
         viewModel.fetchEmployees(adminId.toString())
+        setFragmentResultListener("delete_request") { _, bundle ->
+            val isDeleted = bundle.getBoolean("isDeleted")
+            if (isDeleted) {
+                viewModel.fetchEmployees(adminId.toString())
+            }
+        }
     }
 
     private fun setupRecyclerView() {
