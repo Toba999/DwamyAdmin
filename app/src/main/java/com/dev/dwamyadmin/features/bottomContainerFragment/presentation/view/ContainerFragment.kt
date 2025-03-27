@@ -36,7 +36,11 @@ class ContainerFragment : Fragment() {
                 if (backPressedTime + 3000 > System.currentTimeMillis()) {
                     requireActivity().finish()
                 } else {
-                    Toast.makeText(requireActivity(), "اضغط مجددا لمغادرة التطبيق", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireActivity(),
+                        "اضغط مجددا لمغادرة التطبيق",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 backPressedTime = System.currentTimeMillis()
             }
@@ -44,6 +48,7 @@ class ContainerFragment : Fragment() {
 
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -55,9 +60,10 @@ class ContainerFragment : Fragment() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.mapFragment, R.id.successDialogFragment,R.id.registerEmployeeFragment-> {
+                R.id.employeeListFragment, R.id.mapFragment, R.id.successDialogFragment, R.id.registerEmployeeFragment -> {
                     binding.bottomNavView.visibility = View.GONE
                 }
+
                 else -> {
                     binding.bottomNavView.visibility = View.VISIBLE
                 }

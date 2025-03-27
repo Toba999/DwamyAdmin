@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -41,11 +42,9 @@ class ExcuseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        showLoading(true)
         setupRecyclerView()
         observeViewModel()
-
-        // Get admin ID and fetch excuse requests
         val adminId = sharedPrefManager.getAdminId()
         viewModel.getExcuseRequests(adminId.toString())
     }
@@ -65,10 +64,12 @@ class ExcuseFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.excuseRequests.collect { requests ->
                 if (requests.isEmpty()) {
+                    showLoading(false)
                     binding.emptyStateTv.visibility = View.VISIBLE
                     binding.emptyStateTv.text = "لا توجد طلبات أعذار"
                     binding.excuseRv.visibility = View.GONE
                 } else {
+                    showLoading(false)
                     binding.emptyStateTv.visibility = View.GONE
                     binding.excuseRv.visibility = View.VISIBLE
                     adapter.updateList(requests)
@@ -84,7 +85,9 @@ class ExcuseFragment : Fragment() {
             }
         }
     }
-
+    private fun showLoading(isShown: Boolean) {
+        binding.loadingView.root.isVisible = isShown
+    }
     private fun handleAcceptClick(excuseItem: ExcuseItem, position: Int) {
         viewModel.updateExcuseStatus(excuseItem.id, ExcuseStatus.ACCEPTED)
         adapter.updateItemStatus(position, "مقبول")

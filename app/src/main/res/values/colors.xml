@@ -5,5 +5,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#2487C5</color>
     <color name="red">#FF0000</color>
+    <color name="green">#23EF00</color>
+
 
 </resources>

@@ -1,6 +1,5 @@
 package com.dev.dwamyadmin.features.register.viewModel
 
-import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.dwamyadmin.domain.models.Admin
@@ -29,11 +28,11 @@ class RegisterViewModel @Inject constructor(
                 val success =
                     repo.registerAdmin(Admin(name = name, email = email, password = password))
                 _registerState.value =
-                    if (success) RegisterState.Success("Admin registered") else RegisterState.Failure(
-                        "Registration failed"
+                    if (success) RegisterState.Success("تم تسجيل صاحب العمل") else RegisterState.Failure(
+                        "فشل التسجيل"
                     )
             } catch (e: Exception) {
-                _registerState.value = RegisterState.Failure(e.message ?: "Error")
+                _registerState.value = RegisterState.Failure(e.message ?: "خطأ")
             }
         }
     }
@@ -46,7 +45,10 @@ class RegisterViewModel @Inject constructor(
         workDays: String,
         startTime: Int,
         endTime: Int,
-        imageUri: String
+        imageUri: String,
+        address: String,
+        latitude: Double,
+        longitude: Double
     ) {
         viewModelScope.launch {
             _registerState.value = RegisterState.Loading
@@ -59,15 +61,18 @@ class RegisterViewModel @Inject constructor(
                         adminId = adminId,
                         workDays = workDays,
                         startTime = startTime,
-                        endTime = endTime
+                        endTime = endTime,
+                        latitude = latitude ,
+                        longitude = longitude ,
+                        address = address
                     )
                 )
                 _registerState.value =
-                    if (success) RegisterState.Success("Employee registered") else RegisterState.Failure(
-                        "Registration failed"
+                    if (success) RegisterState.Success("تم تسجيل الموظف") else RegisterState.Failure(
+                        "فشل التسجيل"
                     )
             } catch (e: Exception) {
-                _registerState.value = RegisterState.Failure(e.message ?: "Error")
+                _registerState.value = RegisterState.Failure(e.message ?: "خطأ")
             }
         }
     }

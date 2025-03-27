@@ -32,6 +32,9 @@
         <action
             android:id="@+id/action_homeFragment_to_excuseFragment"
             app:destination="@id/excuseFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_employeeListFragment"
+            app:destination="@id/employeeListFragment" />
     </fragment>
     <fragment
         android:id="@+id/vacationFragment"
@@ -68,6 +71,11 @@
         android:id="@+id/mapFragment"
         android:name="com.dev.dwamyadmin.features.mapScreen.MapFragment"
         android:label="MapFragment" />
+    <fragment
+        android:id="@+id/employeeListFragment"
+        android:name="com.dev.dwamyadmin.features.employeesList.presentation.view.EmployeeListFragment"
+        android:label="fragment_employee_list"
+        tools:layout="@layout/fragment_employee_list" />
 
 
 </navigation>

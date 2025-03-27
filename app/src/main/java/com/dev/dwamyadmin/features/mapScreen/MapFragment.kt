@@ -1,21 +1,30 @@
 package com.dev.dwamyadmin.features.mapScreen
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.dev.dwamyadmin.R
 import com.dev.dwamyadmin.databinding.FragmentMapBinding
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import java.util.Locale
+import kotlin.collections.isNullOrEmpty
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
@@ -38,7 +47,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync(this)
-
+        checkLocationPermissions()
         binding.selectLocationButton.setOnClickListener {
             selectedLocation?.let {
                 returnSelectedLocation(it)
@@ -61,7 +70,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         googleMap?.setOnMapClickListener { latLng ->
             googleMap?.clear()
-            googleMap?.addMarker(MarkerOptions().position(latLng).title("Selected Location"))
+            googleMap?.addMarker(MarkerOptions().position(latLng).title("المكان المحدد"))
             selectedLocation = latLng
         }
     }
@@ -69,7 +78,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun moveToCurrentLocation() {
         val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            promptEnableGPS()
+            checkGPSAndNavigate()
             return
         }
 
@@ -85,33 +94,100 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun promptEnableGPS() {
-        Toast.makeText(requireContext(), "Please enable GPS", Toast.LENGTH_LONG).show()
-        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-        startActivity(intent)
-    }
-
     private fun returnSelectedLocation(latLng: LatLng) {
+        val geocoder = Geocoder(requireContext(), Locale("ar"))  // Arabic locale
+        val addressList: List<Address>? = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+
+        val address = if (!addressList.isNullOrEmpty()) {
+            addressList[0].getAddressLine(0)  // Get full address in Arabic
+        } else {
+            "العنوان غير متاح"
+        }
+
         parentFragmentManager.setFragmentResult(
             "locationRequestKey",
             Bundle().apply {
                 putDouble("latitude", latLng.latitude)
                 putDouble("longitude", latLng.longitude)
+                putString("address", address)  // Send Arabic address
             }
         )
         parentFragmentManager.popBackStack()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                moveToCurrentLocation()
-            } else {
-                Toast.makeText(requireContext(), "Permission denied!", Toast.LENGTH_SHORT).show()
+
+    private fun checkLocationPermissions() {
+        val permission = Manifest.permission.ACCESS_FINE_LOCATION
+
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED -> {
+                checkGPSAndNavigate()
+            }
+
+            shouldShowRequestPermissionRationale(permission) -> {
+                showPermissionRationaleDialog()
+            }
+
+            else -> {
+                requestPermissions(arrayOf(permission), LOCATION_PERMISSION_REQUEST_CODE)
             }
         }
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkGPSAndNavigate()
+            } else if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
+                showPermissionDeniedDialog()
+            }
+        }
+    }
+    private fun checkGPSAndNavigate() {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+        if (!isGPSEnabled){
+            showEnableGPSDialog()
+        }
+    }
+
+    private fun showPermissionRationaleDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("إذن الموقع مطلوب")
+            .setMessage("يرجى منح إذن الموقع لاختيار الموقع.")
+            .setPositiveButton("حسنًا") { _, _ ->
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            }
+            .setNegativeButton("إلغاء", null)
+            .show()
+    }
+    private fun showPermissionDeniedDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("إذن الموقع مرفوض")
+            .setMessage("لا يمكن اختيار الموقع بدون الإذن. يرجى منحه من الإعدادات.")
+            .setPositiveButton("فتح الإعدادات") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.parse("package:" + requireContext().packageName)
+                startActivity(intent)
+            }
+            .setNegativeButton("إلغاء", null)
+            .show()
+    }
+
+    private fun showEnableGPSDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("تشغيل الـ GPS")
+            .setMessage("يرجى تفعيل الـ GPS لاختيار الموقع.")
+            .setPositiveButton("فتح الإعدادات") { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton("إلغاء", null)
+            .show()
+    }
+
 
     override fun onResume() {
         super.onResume()

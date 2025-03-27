@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dev.dwamyadmin.databinding.FragmentVacationBinding
-import com.dev.dwamyadmin.domain.models.LeaveRequest
 import com.dev.dwamyadmin.domain.models.LeaveStatus
-import com.dev.dwamyadmin.domain.repo.FireBaseRepo
 import com.dev.dwamyadmin.features.vacation.presentation.viewModel.VacationViewModel
 import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.android.material.snackbar.Snackbar
@@ -40,11 +39,9 @@ class VacationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        showLoading(true)
         setupRecyclerView()
         observeViewModel()
-
-
         val adminId = sharedPrefManager.getAdminId()
         viewModel.fetchLeaveRequests(adminId.toString())
     }
@@ -63,15 +60,19 @@ class VacationFragment : Fragment() {
         binding.vacationRv.layoutManager = LinearLayoutManager(requireContext())
         binding.vacationRv.adapter = adapter
     }
-
+    private fun showLoading(isShown: Boolean) {
+        binding.loadingView.root.isVisible = isShown
+    }
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.leaveRequests.collect { requests ->
                 if (requests.isEmpty()) {
+                    showLoading(false)
                     binding.emptyStateTv.visibility = View.VISIBLE
                     binding.emptyStateTv.text = "لا توجد طلبات إجازة"
                     binding.vacationRv.visibility = View.GONE
                 } else {
+                    showLoading(false)
                     binding.emptyStateTv.visibility = View.GONE
                     binding.vacationRv.visibility = View.VISIBLE
                     adapter.updateList(requests)
