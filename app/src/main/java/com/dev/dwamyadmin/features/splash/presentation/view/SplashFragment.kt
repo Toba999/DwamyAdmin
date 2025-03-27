@@ -37,7 +37,7 @@ class SplashFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch{
-            delay(3000)
+            delay(1000)
             val navOptions = NavOptions.Builder()
                 .setPopUpTo(R.id.SplashFragment, true)
                 .setLaunchSingleTop(true)

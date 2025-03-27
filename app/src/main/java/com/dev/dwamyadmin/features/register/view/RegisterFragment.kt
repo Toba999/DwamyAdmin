@@ -92,6 +92,7 @@ class RegisterFragment : Fragment() {
             binding.adminLocation.visibility = View.GONE
             binding.uploadImgButton.visibility = View.GONE
             binding.uploadedImage.visibility = View.GONE
+            binding.empProfession.visibility = View.GONE
             binding.registerTitle.text = "تسجيل حساب"
         }
     }
@@ -134,6 +135,7 @@ class RegisterFragment : Fragment() {
                     viewModel.registerEmployee(
                         binding.adminName.text.toString().trim(),
                         binding.adminEmail.text.toString().trim(),
+                        binding.empProfession.text.toString().trim(),
                         binding.adminPassword.text.toString().trim(),
                         adminId ?: "",
                         binding.workDays.text.toString(),
@@ -155,12 +157,19 @@ class RegisterFragment : Fragment() {
         val name = binding.adminName.text.toString().trim()
         val email = binding.adminEmail.text.toString().trim()
         val password = binding.adminPassword.text.toString().trim()
+        val profession = binding.empProfession.text.toString().trim()
 
         if (name.isEmpty()) {
             binding.adminName.error = "الاسم مطلوب"
             isValid = false
         } else {
             binding.adminName.error = null
+        }
+        if (profession.isEmpty()) {
+            binding.empProfession.error = "الوظيفة مطلوبة"
+            isValid = false
+        } else {
+            binding.empProfession.error = null
         }
 
         if (latitude == null || longitude == null || address.isNullOrEmpty()) {
@@ -256,7 +265,11 @@ class RegisterFragment : Fragment() {
             findNavController().navigate(R.id.containerFragment, null, navOptions)
         }else{
             showSnackBar(requireView(),message,false)
-            findNavController().popBackStack()
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.registerFragment, true)
+                .setLaunchSingleTop(true)
+                .build()
+            findNavController().navigate(R.id.action_registerEmployeeFragment_to_homeFragment, null, navOptions)
         }
 
     }

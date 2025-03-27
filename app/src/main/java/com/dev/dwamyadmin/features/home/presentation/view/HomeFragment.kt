@@ -6,8 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.dev.dwamyadmin.R
 import com.dev.dwamyadmin.databinding.FragmentHomeBinding
+import com.dev.dwamyadmin.utils.SharedPrefManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -15,6 +19,9 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+
+    @Inject
+    lateinit var sharedPrefManager: SharedPrefManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,25 +34,27 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply{
+            nameText.text = sharedPrefManager.getAdminName()
             addEmpBtn.setOnClickListener {
-                // to add employee fragment
                 findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToAddEmployeeFragment(false))
             }
 
             deleteEmpBtn.setOnClickListener {
-                // to delete employee fragment
                 findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToEmployeeListFragment())
             }
             reportsCard.setOnClickListener{
-                // to reports fragment
 //              findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
             }
-            execuseBtn.setOnClickListener{
-                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToExcuseFragment())
+            binding.execuseBtn.setOnClickListener {
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+                    .selectedItemId = R.id.excuseFragment
             }
-            vacBtn.setOnClickListener{
-                findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationFragment())
+
+            binding.vacBtn.setOnClickListener {
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+                    .selectedItemId = R.id.vacationFragment
             }
+
         }
 
     }

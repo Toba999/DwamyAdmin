@@ -123,4 +123,23 @@ class FireBaseRepoImpl @Inject constructor(
             false
         }
     }
+    override suspend fun getEmployeesByAdmin(adminId: String): List<Employee> {
+        return try {
+            val querySnapshot = employeesCollection.whereEqualTo("adminId", adminId).get().await()
+            querySnapshot.documents.mapNotNull { it.toObject(Employee::class.java) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    override suspend fun deleteEmployee(employeeId: String): Boolean {
+        return try {
+            employeesCollection.document(employeeId).delete().await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
 }

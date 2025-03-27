@@ -16,4 +16,6 @@ interface FireBaseRepo {
     suspend fun getExcuseRequestsByAdmin(adminId: String): List<ExcuseRequest>
     suspend fun updateLeaveRequestStatus(requestId: String, status: LeaveStatus): Boolean
     suspend fun updateExcuseRequestStatus(requestId: String, status: ExcuseStatus): Boolean
+    suspend fun getEmployeesByAdmin(adminId: String): List<Employee>
+    suspend fun deleteEmployee(employeeId: String): Boolean
 }

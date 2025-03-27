@@ -61,6 +61,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/greetingText" />
+
             <ImageView
                 android:id="@+id/locationImage"
                 android:layout_width="18dp"

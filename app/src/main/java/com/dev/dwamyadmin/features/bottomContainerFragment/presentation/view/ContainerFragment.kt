@@ -15,8 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ContainerFragment : Fragment() {
-
-
     private var _binding: FragmentContainerBinding? = null
     private val binding get() = _binding!!
     var backPressedTime: Long = 0

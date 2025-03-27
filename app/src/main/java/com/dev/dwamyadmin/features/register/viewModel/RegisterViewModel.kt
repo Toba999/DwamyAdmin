@@ -40,6 +40,7 @@ class RegisterViewModel @Inject constructor(
     fun registerEmployee(
         name: String,
         email: String,
+        profession : String,
         password: String,
         adminId: String,
         workDays: String,
@@ -57,6 +58,7 @@ class RegisterViewModel @Inject constructor(
                     Employee(
                         name = name,
                         email = email,
+                        profession = profession,
                         password = password,
                         adminId = adminId,
                         workDays = workDays,
