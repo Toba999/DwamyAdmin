@@ -107,6 +107,7 @@ dependencies {
     implementation (libs.androidx.biometric)
     implementation (libs.play.services.maps)
     implementation (libs.play.services.location)
+    implementation (libs.horizontalcalendar)
 
     //shimmer
     implementation(libs.shimmer)
