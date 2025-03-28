@@ -254,7 +254,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.registerState.collectLatest { state ->
                 when (state) {
                     is RegisterState.Loading -> {
@@ -271,7 +271,7 @@ class RegisterFragment : Fragment() {
                 }
             }
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.imageUrl.collectLatest { url ->
                 binding.imageProgressBar.visibility = View.GONE
                 binding.uploadedImage.visibility = View.VISIBLE
