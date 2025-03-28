@@ -1,5 +1,6 @@
 package com.dev.dwamyadmin.features.register.view
 
+import android.R.attr.text
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -51,14 +53,8 @@ class RegisterFragment : Fragment() {
 
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
-            imageUri = it
             binding.uploadedImage.setImageURI(it)
-        }
-    }
-
-    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success && imageUri != null) {
-            binding.uploadedImage.setImageURI(imageUri)
+            viewModel.uploadEmployeeImage(it)
         }
     }
 
@@ -123,7 +119,7 @@ class RegisterFragment : Fragment() {
         }
 
         binding.registerButton.setOnClickListener {
-            if (validateInputs()) {
+            if (validateInputs(isAdmin)) {
                 if (isAdmin) {
                     viewModel.registerAdmin(
                         binding.adminName.text.toString().trim(),
@@ -144,39 +140,32 @@ class RegisterFragment : Fragment() {
                         imageUri.toString(),
                         address.toString(),
                         latitude ?: 0.0,
-                        longitude?: 0.0
+                        longitude?: 0.0,
+                        binding.locationArea.text.toString().toInt()
                     )
                 }
             }
         }
     }
 
-    private fun validateInputs(): Boolean {
+    private fun validateInputs(isAdmin: Boolean): Boolean {
         var isValid = true
 
         val name = binding.adminName.text.toString().trim()
         val email = binding.adminEmail.text.toString().trim()
         val password = binding.adminPassword.text.toString().trim()
         val profession = binding.empProfession.text.toString().trim()
+        val area = binding.locationArea.text.toString()
 
+        // Validate name (Required for both admin & employee)
         if (name.isEmpty()) {
             binding.adminName.error = "الاسم مطلوب"
             isValid = false
         } else {
             binding.adminName.error = null
         }
-        if (profession.isEmpty()) {
-            binding.empProfession.error = "الوظيفة مطلوبة"
-            isValid = false
-        } else {
-            binding.empProfession.error = null
-        }
 
-        if (latitude == null || longitude == null || address.isNullOrEmpty()) {
-            binding.adminEmail.error = "الموقع مطلوب"
-            isValid = false
-        }
-
+        // Validate email (Required for both admin & employee)
         if (email.isEmpty()) {
             binding.adminEmail.error = "البريد الإلكتروني مطلوب"
             isValid = false
@@ -187,6 +176,7 @@ class RegisterFragment : Fragment() {
             binding.adminEmail.error = null
         }
 
+        // Validate password (Required for both admin & employee)
         if (password.isEmpty()) {
             binding.adminPassword.error = "كلمة المرور مطلوبة"
             isValid = false
@@ -195,6 +185,31 @@ class RegisterFragment : Fragment() {
             isValid = false
         } else {
             binding.adminPassword.error = null
+        }
+
+        // If the user is an admin, return the result without checking other fields
+        if (isAdmin) return isValid
+
+        // Validate profession (Required only for employees)
+        if (profession.isEmpty()) {
+            binding.empProfession.error = "الوظيفة مطلوبة"
+            isValid = false
+        } else {
+            binding.empProfession.error = null
+        }
+
+        // Validate area (Required only for employees)
+        if (area.isEmpty()) {
+            binding.locationArea.error = "المساحة مطلوبة"
+            isValid = false
+        } else {
+            binding.locationArea.error = null
+        }
+
+        // Validate location fields (Required only for employees)
+        if (latitude == null || longitude == null || address.isNullOrEmpty()) {
+            binding.adminEmail.error = "الموقع مطلوب"
+            isValid = false
         }
 
         return isValid
@@ -223,13 +238,16 @@ class RegisterFragment : Fragment() {
     }
 
     private fun showImageSourceDialog() {
-        val options = arrayOf("اختر من المعرض", "التقط صورة")
+        val options = arrayOf("اختر من المعرض")
         AlertDialog.Builder(requireContext())
             .setTitle("رفع صورة")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> galleryLauncher.launch("image/*")
-                    1 -> takePhoto()
+                    0 -> {
+                        galleryLauncher.launch("image/*")
+                        binding.imageProgressBar.visibility = View.VISIBLE
+                        binding.uploadedImage.visibility = View.GONE
+                    }
                 }
             }
             .show()
@@ -251,6 +269,13 @@ class RegisterFragment : Fragment() {
                     }
                     is RegisterState.Idle -> {}
                 }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.imageUrl.collectLatest { url ->
+                binding.imageProgressBar.visibility = View.GONE
+                binding.uploadedImage.visibility = View.VISIBLE
+                imageUri = url?.toUri()
             }
         }
     }
@@ -287,17 +312,6 @@ class RegisterFragment : Fragment() {
     }
     private fun showLoading(isShown: Boolean) {
         binding.loadingView.root.isVisible = isShown
-    }
-    private fun takePhoto() {
-        imageUri = createImageUri()
-        imageUri?.let { uri ->
-            cameraLauncher.launch(uri)
-        }
-    }
-
-    private fun createImageUri(): Uri? {
-        val file = File(requireContext().filesDir, "photo_${System.currentTimeMillis()}.jpg")
-        return FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", file)
     }
 
     override fun onDestroyView() {

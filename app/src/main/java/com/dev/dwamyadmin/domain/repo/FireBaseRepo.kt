@@ -1,5 +1,6 @@
 package com.dev.dwamyadmin.domain.repo
 
+import android.net.Uri
 import com.dev.dwamyadmin.domain.models.Admin
 import com.dev.dwamyadmin.domain.models.Employee
 import com.dev.dwamyadmin.domain.models.ExcuseRequest
@@ -18,4 +19,5 @@ interface FireBaseRepo {
     suspend fun updateExcuseRequestStatus(requestId: String, status: ExcuseStatus): Boolean
     suspend fun getEmployeesByAdmin(adminId: String): List<Employee>
     suspend fun deleteEmployee(employeeId: String): Boolean
+    suspend fun uploadImage(imageUri: Uri): String?
 }

@@ -14,6 +14,8 @@ data class Employee(
     val latitude : Double = 0.0,
     val longitude : Double = 0.0,
     val address : String = "",
+    val imageUri : String = "",
+    val area : Int = 100,
     val profession : String = "",
     val startTime: Int = 9,  // Work start time (24-hour format)
     val endTime: Int = 17   // Work end time (24-hour format)

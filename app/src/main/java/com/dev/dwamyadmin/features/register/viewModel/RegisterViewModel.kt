@@ -1,5 +1,6 @@
 package com.dev.dwamyadmin.features.register.viewModel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.dwamyadmin.domain.models.Admin
@@ -20,6 +21,10 @@ class RegisterViewModel @Inject constructor(
 
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState: StateFlow<RegisterState> = _registerState.asStateFlow()
+
+
+    private val _imageUrl = MutableStateFlow<String?>(null)
+    val imageUrl: StateFlow<String?> get() = _imageUrl
 
     fun registerAdmin(name: String, email: String, password: String) {
         viewModelScope.launch {
@@ -49,7 +54,8 @@ class RegisterViewModel @Inject constructor(
         imageUri: String,
         address: String,
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        area : Int
     ) {
         viewModelScope.launch {
             _registerState.value = RegisterState.Loading
@@ -66,7 +72,9 @@ class RegisterViewModel @Inject constructor(
                         endTime = endTime,
                         latitude = latitude ,
                         longitude = longitude ,
-                        address = address
+                        address = address,
+                        imageUri = imageUri,
+                        area = area
                     )
                 )
                 _registerState.value =
@@ -76,6 +84,14 @@ class RegisterViewModel @Inject constructor(
             } catch (e: Exception) {
                 _registerState.value = RegisterState.Failure(e.message ?: "خطأ")
             }
+        }
+    }
+
+
+    fun uploadEmployeeImage(imageUri: Uri) {
+        viewModelScope.launch {
+            val url = repo.uploadImage(imageUri)
+            _imageUrl.value = url
         }
     }
 }

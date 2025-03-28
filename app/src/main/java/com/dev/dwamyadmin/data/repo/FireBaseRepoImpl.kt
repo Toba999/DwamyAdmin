@@ -1,5 +1,6 @@
 package com.dev.dwamyadmin.data.repo
 
+import android.net.Uri
 import com.dev.dwamyadmin.domain.models.Admin
 import com.dev.dwamyadmin.domain.models.Employee
 import com.dev.dwamyadmin.domain.models.ExcuseRequest
@@ -9,13 +10,16 @@ import com.dev.dwamyadmin.domain.models.LeaveStatus
 import com.dev.dwamyadmin.domain.repo.FireBaseRepo
 import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FireBaseRepoImpl @Inject constructor(
     firestore: FirebaseFirestore,
+    storage: FirebaseStorage,
     private val sharedPrefManager: SharedPrefManager
 ) : FireBaseRepo {
+    private val storageReference = storage.reference.child("employee_images")
 
     private val leaveRequestsCollection = firestore.collection("leave_requests")
     private val excuseRequestsCollection = firestore.collection("excuse_requests")
@@ -140,6 +144,17 @@ class FireBaseRepoImpl @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             false
+        }
+    }
+
+    override suspend fun uploadImage(imageUri: Uri): String? {
+        return try {
+            val fileRef = storageReference.child("${System.currentTimeMillis()}.jpg")
+            fileRef.putFile(imageUri).await()
+            fileRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }
