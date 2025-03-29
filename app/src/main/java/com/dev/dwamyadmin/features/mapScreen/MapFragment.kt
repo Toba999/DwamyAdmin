@@ -47,7 +47,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync(this)
-        checkLocationPermissions()
         binding.selectLocationButton.setOnClickListener {
             selectedLocation?.let {
                 returnSelectedLocation(it)
@@ -78,7 +77,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun moveToCurrentLocation() {
         val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            checkGPSAndNavigate()
             return
         }
 
@@ -120,10 +118,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val permission = Manifest.permission.ACCESS_FINE_LOCATION
 
         when {
-            ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED -> {
-                checkGPSAndNavigate()
-            }
-
             shouldShowRequestPermissionRationale(permission) -> {
                 showPermissionRationaleDialog()
             }
@@ -191,6 +185,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
+        checkLocationPermissions()
         binding.mapView.onResume()
     }
 
@@ -211,6 +206,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+        internal const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 }

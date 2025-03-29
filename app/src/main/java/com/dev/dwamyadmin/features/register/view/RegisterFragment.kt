@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navOptions
 import com.dev.dwamyadmin.R
 import com.dev.dwamyadmin.databinding.FragmentRegisterBinding
 import com.dev.dwamyadmin.features.register.models.RegisterState
@@ -92,7 +94,7 @@ class RegisterFragment : Fragment() {
 
     private fun setupListeners(isAdmin: Boolean) {
         binding.registerBackBtn.setOnClickListener {
-            activity?.finish()
+            findNavController().popBackStack()
         }
 
         binding.workDays.setOnClickListener {

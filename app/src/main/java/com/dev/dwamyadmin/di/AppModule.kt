@@ -4,7 +4,6 @@ import android.content.Context
 import com.dev.dwamyadmin.data.repo.FireBaseRepoImpl
 import com.dev.dwamyadmin.domain.repo.FireBaseRepo
 import com.dev.dwamyadmin.utils.SharedPrefManager
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
