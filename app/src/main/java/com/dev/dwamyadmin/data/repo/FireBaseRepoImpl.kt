@@ -3,6 +3,7 @@ package com.dev.dwamyadmin.data.repo
 import android.net.Uri
 import com.dev.dwamyadmin.domain.models.Admin
 import com.dev.dwamyadmin.domain.models.Employee
+import com.dev.dwamyadmin.domain.models.EmployeeAttendence
 import com.dev.dwamyadmin.domain.models.ExcuseRequest
 import com.dev.dwamyadmin.domain.models.ExcuseStatus
 import com.dev.dwamyadmin.domain.models.LeaveRequest
@@ -12,6 +13,7 @@ import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import javax.inject.Inject
 
 class FireBaseRepoImpl @Inject constructor(
@@ -23,6 +25,7 @@ class FireBaseRepoImpl @Inject constructor(
 
     private val leaveRequestsCollection = firestore.collection("leave_requests")
     private val excuseRequestsCollection = firestore.collection("excuse_requests")
+
     private val adminsCollection = firestore.collection("admins")
     private val employeesCollection = firestore.collection("employees")
 
@@ -135,6 +138,11 @@ class FireBaseRepoImpl @Inject constructor(
             e.printStackTrace()
             emptyList()
         }
+    }
+
+    override suspend fun getEmployeesByDate(date: Date): List<EmployeeAttendence> {
+        TODO("Not yet implemented")
+
     }
 
     override suspend fun deleteEmployee(employeeId: String): Boolean {

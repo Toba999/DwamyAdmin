@@ -43,7 +43,7 @@ class HomeFragment : Fragment() {
                 findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToEmployeeListFragment())
             }
             reportsCard.setOnClickListener{
-//              findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToVacationRequestFragment())
+              findNavController().navigate(HomeFragmentDirections.Companion.actionHomeFragmentToReportsFragment())
             }
             binding.execuseBtn.setOnClickListener {
                 requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav_view)
