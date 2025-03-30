@@ -67,16 +67,18 @@ class VacationFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.leaveRequests.collect { requests ->
-                if (requests.isEmpty()) {
-                    showLoading(false)
-                    binding.emptyStateTv.visibility = View.VISIBLE
-                    binding.emptyStateTv.text = "لا توجد طلبات إجازة"
-                    binding.vacationRv.visibility = View.GONE
-                } else {
-                    showLoading(false)
-                    binding.emptyStateTv.visibility = View.GONE
-                    binding.vacationRv.visibility = View.VISIBLE
-                    adapter.updateList(requests)
+                requests?.let {
+                    if (requests.isEmpty()) {
+                        showLoading(false)
+                        binding.emptyStateTv.visibility = View.VISIBLE
+                        binding.emptyStateTv.text = "لا توجد طلبات إجازة"
+                        binding.vacationRv.visibility = View.GONE
+                    } else {
+                        showLoading(false)
+                        binding.emptyStateTv.visibility = View.GONE
+                        binding.vacationRv.visibility = View.VISIBLE
+                        adapter.updateList(requests)
+                    }
                 }
             }
         }

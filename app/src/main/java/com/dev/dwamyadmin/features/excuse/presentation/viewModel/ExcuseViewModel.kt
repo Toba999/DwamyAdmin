@@ -17,8 +17,8 @@ class ExcuseViewModel @Inject constructor(
     private val firebaseRepo: FireBaseRepo
 ) : ViewModel() {
 
-    private val _excuseRequests = MutableStateFlow<List<ExcuseRequest>>(emptyList())
-    val excuseRequests: StateFlow<List<ExcuseRequest>> = _excuseRequests
+    private val _excuseRequests = MutableStateFlow<List<ExcuseRequest>?>(null)
+    val excuseRequests: StateFlow<List<ExcuseRequest>?> = _excuseRequests
 
     private val _updateStatusResult = MutableStateFlow<Boolean?>(null)
     val updateStatusResult: StateFlow<Boolean?> = _updateStatusResult
@@ -35,7 +35,7 @@ class ExcuseViewModel @Inject constructor(
             val success = firebaseRepo.updateExcuseRequestStatus(excuseId, newStatus)
             _updateStatusResult.value = success
             if (success) {
-                _excuseRequests.value = _excuseRequests.value.map {
+                _excuseRequests.value = _excuseRequests.value?.map {
                     if (it.id == excuseId) it.copy(status = newStatus) else it
                 }
             }

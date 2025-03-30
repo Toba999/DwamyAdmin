@@ -19,8 +19,8 @@ class VacationViewModel @Inject constructor(
     private val fireBaseRepo: FireBaseRepo
 ) : ViewModel() {
 
-    private val _leaveRequests = MutableStateFlow<List<LeaveRequest>>(emptyList())
-    val leaveRequests: StateFlow<List<LeaveRequest>> = _leaveRequests
+    private val _leaveRequests = MutableStateFlow<List<LeaveRequest>?>(null)
+    val leaveRequests: StateFlow<List<LeaveRequest>?> = _leaveRequests
 
     private val _updateStatusResult = MutableSharedFlow<Boolean?>()
     val updateStatusResult: SharedFlow<Boolean?> = _updateStatusResult
@@ -37,7 +37,7 @@ class VacationViewModel @Inject constructor(
             val success = fireBaseRepo.updateLeaveRequestStatus(requestId, status)
             _updateStatusResult.emit(success)
             if (success) {
-                _leaveRequests.value = _leaveRequests.value.map {
+                _leaveRequests.value = _leaveRequests.value?.map {
                     if (it.id == requestId) it.copy(status = status) else it
                 }
             }

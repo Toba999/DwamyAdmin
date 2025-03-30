@@ -61,16 +61,18 @@ class ExcuseFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.excuseRequests.collect { requests ->
-                if (requests.isEmpty()) {
-                    showLoading(false)
-                    binding.emptyStateTv.visibility = View.VISIBLE
-                    binding.emptyStateTv.text = "لا توجد طلبات أعذار"
-                    binding.excuseRv.visibility = View.GONE
-                } else {
-                    showLoading(false)
-                    binding.emptyStateTv.visibility = View.GONE
-                    binding.excuseRv.visibility = View.VISIBLE
-                    adapter.updateList(requests)
+                requests?.let {
+                    if (requests.isEmpty()) {
+                        showLoading(false)
+                        binding.emptyStateTv.visibility = View.VISIBLE
+                        binding.emptyStateTv.text = "لا توجد طلبات أعذار"
+                        binding.excuseRv.visibility = View.GONE
+                    } else {
+                        showLoading(false)
+                        binding.emptyStateTv.visibility = View.GONE
+                        binding.excuseRv.visibility = View.VISIBLE
+                        adapter.updateList(requests)
+                    }
                 }
             }
         }
