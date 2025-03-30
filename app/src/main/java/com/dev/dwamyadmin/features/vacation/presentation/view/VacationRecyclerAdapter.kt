@@ -5,33 +5,34 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.dwamyadmin.databinding.VacationItemBinding
 import com.dev.dwamyadmin.domain.models.LeaveRequest
-import com.dev.dwamyadmin.domain.models.toVacationItem
+import com.dev.dwamyadmin.domain.models.LeaveStatus
+import com.dev.dwamyadmin.domain.models.toArabic
 
 class VacationAdapter(
-    private val vacationItems: MutableList<VacationItem>, // Use MutableList for dynamic updates
-    private val onAcceptClickListener: (VacationItem, Int) -> Unit, // Pass position for updates
-    private val onDeclineClickListener: (VacationItem, Int) -> Unit // Pass position for updates
+    private val vacationItems: MutableList<LeaveRequest>, // Use MutableList for dynamic updates
+    private val onAcceptClickListener: (LeaveRequest, Int) -> Unit, // Pass position for updates
+    private val onDeclineClickListener: (LeaveRequest, Int) -> Unit // Pass position for updates
 ) : RecyclerView.Adapter<VacationAdapter.VacationViewHolder>() {
 
     inner class VacationViewHolder(private val binding: VacationItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(vacationItem: VacationItem) {
-            binding.timestamp.text = vacationItem.timestamp
-            binding.title.text = vacationItem.title
-            binding.dateFrom.text = vacationItem.fromTime
-            binding.dateTo.text = vacationItem.toTime
-            binding.vacAplName.text = vacationItem.applicantName
-            binding.status.text = vacationItem.status
+        fun bind(vacationItem: LeaveRequest) {
+            binding.timestamp.text = vacationItem.issuedDate
+            binding.title.text = vacationItem.requestType
+            binding.dateFrom.text = vacationItem.dayFrom
+            binding.dateTo.text = vacationItem.dayTo
+            binding.vacAplName.text = vacationItem.employeeName
+            binding.status.text = vacationItem.status.toArabic()
 
             // Set initial visibility of buttons based on the status
             when (vacationItem.status) {
-                "مقبول" -> {
+                LeaveStatus.ACCEPTED -> {
                     binding.acceptVacBtn.visibility = View.GONE
                     binding.declineVacBtn.visibility = View.GONE
                     binding.status.setTextColor(binding.root.context.getColor(android.R.color.holo_green_dark))
                 }
-                "مرفوض" -> {
+                LeaveStatus.REJECTED -> {
                     binding.acceptVacBtn.visibility = View.GONE
                     binding.declineVacBtn.visibility = View.GONE
                     binding.status.setTextColor(binding.root.context.getColor(android.R.color.holo_red_dark))
@@ -69,7 +70,7 @@ class VacationAdapter(
     }
 
     // Function to update the status of an item
-    fun updateItemStatus(position: Int, newStatus: String) {
+    fun updateItemStatus(position: Int, newStatus: LeaveStatus) {
         if (position in 0 until vacationItems.size) {
             vacationItems[position].status = newStatus
             notifyItemChanged(position)
@@ -77,18 +78,8 @@ class VacationAdapter(
     }
     fun updateList(newList: List<LeaveRequest>) {
         vacationItems.clear()
-        val mappedList = newList.map{it.toVacationItem()}
-        vacationItems.addAll(mappedList)
+        vacationItems.addAll(newList)
         notifyDataSetChanged()
     }
 }
 
-data class VacationItem(
-    val id: String,
-    val timestamp: String,
-    val title: String,
-    val fromTime: String,
-    val toTime: String,
-    val applicantName: String,
-    var status: String
-)

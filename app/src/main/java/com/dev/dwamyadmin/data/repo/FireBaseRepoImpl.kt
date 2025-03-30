@@ -106,10 +106,15 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun updateLeaveRequestStatus(requestId: String, status: LeaveStatus): Boolean {
         return try {
-            leaveRequestsCollection.document(requestId)
-                .update("status", status.name)
-                .await()
-            true
+            val querySnapshot = leaveRequestsCollection.whereEqualTo("id", requestId).get().await()
+            if (!querySnapshot.isEmpty) {
+                val document = querySnapshot.documents.first()
+                document.reference.update("status", status.name).await()
+                true
+            } else {
+                println("No leave request found with ID: $requestId")
+                false
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             false
@@ -118,10 +123,15 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun updateExcuseRequestStatus(requestId: String, status: ExcuseStatus): Boolean {
         return try {
-            excuseRequestsCollection.document(requestId)
-                .update("status", status.name)
-                .await()
-            true
+            val querySnapshot = excuseRequestsCollection.whereEqualTo("id", requestId).get().await()
+            if (!querySnapshot.isEmpty) {
+                val document = querySnapshot.documents.first()
+                document.reference.update("status", status.name).await()
+                true
+            } else {
+                println("No leave request found with ID: $requestId")
+                false
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             false

@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dev.dwamyadmin.databinding.FragmentVacationBinding
+import com.dev.dwamyadmin.domain.models.LeaveRequest
 import com.dev.dwamyadmin.domain.models.LeaveStatus
 import com.dev.dwamyadmin.features.vacation.presentation.viewModel.VacationViewModel
 import com.dev.dwamyadmin.utils.SharedPrefManager
@@ -92,14 +93,14 @@ class VacationFragment : Fragment() {
         }
     }
 
-    private fun handleAcceptClick(vacationItem: VacationItem, position: Int) {
+    private fun handleAcceptClick(vacationItem: LeaveRequest, position: Int) {
         viewModel.updateLeaveRequestStatus(vacationItem.id, LeaveStatus.ACCEPTED)
-        adapter.updateItemStatus(position, "مقبول")
+        adapter.updateItemStatus(position, LeaveStatus.ACCEPTED)
     }
 
-    private fun handleDeclineClick(vacationItem: VacationItem, position: Int) {
+    private fun handleDeclineClick(vacationItem: LeaveRequest, position: Int) {
         viewModel.updateLeaveRequestStatus(vacationItem.id, LeaveStatus.REJECTED)
-        adapter.updateItemStatus(position,  "مرفوض")
+        adapter.updateItemStatus(position,  LeaveStatus.REJECTED)
     }
 
     private fun showSnackBar(message: String, isError: Boolean) {

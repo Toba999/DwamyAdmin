@@ -38,7 +38,7 @@
             android:id="@+id/execuse_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="طلب اجازة مرضية"
+            android:text="طلب تأخير"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/execuse_timestamp"
@@ -58,7 +58,7 @@
             android:id="@+id/execuse_date_from"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2024-10-22"
+            android:text="9.30"
             android:textSize="16sp"
             android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@id/execuse_fromTv"
@@ -80,12 +80,37 @@
             android:id="@+id/execuse_date_to"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2024-10-23"
+            android:text="10.30"
             android:textSize="16sp"
             android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@id/execuse_toTv"
             app:layout_constraintTop_toBottomOf="@id/execuse_title"
             android:layout_marginEnd="4dp"
+            android:layout_marginTop="8dp"/>
+
+
+        <TextView
+            android:id="@+id/execuse_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="يوم"
+            android:textSize="16sp"
+            android:textColor="@color/primary"
+            app:layout_constraintEnd_toEndOf="@+id/execuse_title"
+            app:layout_constraintTop_toBottomOf="@id/execuse_fromTv"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/execuse_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="25/9/2025"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toStartOf="@+id/execuse_date_text"
+            app:layout_constraintTop_toBottomOf="@id/execuse_fromTv"
+            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"/>
         <FrameLayout
             android:id="@+id/avatar"
@@ -93,7 +118,7 @@
             android:layout_height="28dp"
             android:background="@drawable/circle_border"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/execuse_date_from"
+            app:layout_constraintTop_toBottomOf="@id/execuse_date"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp">
 

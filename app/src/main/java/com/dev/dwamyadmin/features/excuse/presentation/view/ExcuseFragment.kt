@@ -13,8 +13,6 @@ import com.dev.dwamyadmin.databinding.FragmentExcuseBinding
 import com.dev.dwamyadmin.domain.models.ExcuseRequest
 import com.dev.dwamyadmin.domain.models.ExcuseStatus
 import com.dev.dwamyadmin.features.excuse.presentation.viewModel.ExcuseViewModel
-import com.dev.dwamyadmin.features.vacation.presentation.view.VacationAdapter
-import com.dev.dwamyadmin.features.vacation.presentation.view.VacationItem
 import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,14 +86,14 @@ class ExcuseFragment : Fragment() {
     private fun showLoading(isShown: Boolean) {
         binding.loadingView.root.isVisible = isShown
     }
-    private fun handleAcceptClick(excuseItem: ExcuseItem, position: Int) {
+    private fun handleAcceptClick(excuseItem: ExcuseRequest, position: Int) {
         viewModel.updateExcuseStatus(excuseItem.id, ExcuseStatus.ACCEPTED)
-        adapter.updateItemStatus(position, "مقبول")
+        adapter.updateItemStatus(position, ExcuseStatus.ACCEPTED)
     }
 
-    private fun handleDeclineClick(excuseItem: ExcuseItem, position: Int) {
+    private fun handleDeclineClick(excuseItem: ExcuseRequest, position: Int) {
         viewModel.updateExcuseStatus(excuseItem.id, ExcuseStatus.REJECTED)
-        adapter.updateItemStatus(position, "مرفوض")
+        adapter.updateItemStatus(position, ExcuseStatus.REJECTED)
     }
 
     private fun showSnackBar(message: String, isError: Boolean) {

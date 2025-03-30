@@ -6,7 +6,9 @@ import com.dev.dwamyadmin.domain.models.LeaveRequest
 import com.dev.dwamyadmin.domain.models.LeaveStatus
 import com.dev.dwamyadmin.domain.repo.FireBaseRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,8 +22,8 @@ class VacationViewModel @Inject constructor(
     private val _leaveRequests = MutableStateFlow<List<LeaveRequest>>(emptyList())
     val leaveRequests: StateFlow<List<LeaveRequest>> = _leaveRequests
 
-    private val _updateStatusResult = MutableStateFlow<Boolean?>(null)
-    val updateStatusResult: StateFlow<Boolean?> = _updateStatusResult
+    private val _updateStatusResult = MutableSharedFlow<Boolean?>()
+    val updateStatusResult: SharedFlow<Boolean?> = _updateStatusResult
 
     fun fetchLeaveRequests(adminId: String) {
         viewModelScope.launch {
@@ -33,7 +35,7 @@ class VacationViewModel @Inject constructor(
     fun updateLeaveRequestStatus(requestId: String, status: LeaveStatus) {
         viewModelScope.launch {
             val success = fireBaseRepo.updateLeaveRequestStatus(requestId, status)
-            _updateStatusResult.value = success
+            _updateStatusResult.emit(success)
             if (success) {
                 _leaveRequests.value = _leaveRequests.value.map {
                     if (it.id == requestId) it.copy(status = status) else it
