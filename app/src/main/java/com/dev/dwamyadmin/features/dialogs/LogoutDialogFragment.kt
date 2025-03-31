@@ -8,13 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.findNavController
+import com.dev.dwamyadmin.R
 import com.dev.dwamyadmin.databinding.FragmentLogoutDialogBinding
+import com.dev.dwamyadmin.utils.SharedPrefManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LogoutDialogFragment : DialogFragment() {
 
     private var _binding: FragmentLogoutDialogBinding? = null
     private val binding get() = _binding!!
-
+    @Inject
+    lateinit var sharedPrefManager: SharedPrefManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,14 +34,20 @@ class LogoutDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             btnOk.setOnClickListener {
+                sharedPrefManager.clearAdminData()
                 dismiss()
-                requireActivity().finish()
+                navigateToLogin()
             }
             btnCancel.setOnClickListener {
                 dismiss()
             }
         }
 
+    }
+
+    private fun navigateToLogin() {
+        val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+        navController.navigate(R.id.LoginFragment)
     }
 
     override fun onStart() {
