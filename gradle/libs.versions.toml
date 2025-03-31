@@ -30,6 +30,7 @@ coil = "2.4.0"
 coroutines = "1.9.0"
 coroutinesAndroid = "1.9.0"
 kotlinxSerializationJson = "1.5.0"
+kotlinxSerializationJsonVersion = "1.6.0"
 
 # Hilt
 hiltAndroid = "2.51.1"
@@ -50,6 +51,8 @@ fragmentKtx = "1.8.5"
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 b-sahana-horizontalcalendar = { module = "io.github.b-sahana:horizontalcalendar", version.ref = "horizontalcalendarVersion" }
+kotlinx-serialization-json-v160 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJsonVersion" }
+
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 horizontalcalendar = { module = "devs.mulham.horizontalcalendar:horizontalcalendar", version.ref = "horizontalcalendar" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

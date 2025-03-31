@@ -111,6 +111,7 @@ dependencies {
     //shimmer
     implementation(libs.shimmer)
     implementation (libs.b.sahana.horizontalcalendar)
+    implementation(libs.kotlinx.serialization.json.v160)
 
 
     //coil (Image loading for Android backed by Kotlin Coroutines)
