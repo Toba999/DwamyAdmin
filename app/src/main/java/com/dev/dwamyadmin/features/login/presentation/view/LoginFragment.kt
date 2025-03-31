@@ -48,7 +48,9 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         checkForBiometricLogin()  // Check if biometric login is possible
-
+        binding.fingerprintCard.setOnClickListener {
+            showBiometricPrompt()
+        }
         setupObservers()
         setupListeners()
     }

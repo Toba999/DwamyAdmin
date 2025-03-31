@@ -108,6 +108,38 @@
         app:layout_constraintEnd_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
+    <TextView
+        android:id="@+id/fingerPrintText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="تسجيل الدخول باستخدام البصمة"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/goToRegister" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/fingerprintCard"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="12dp"
+        android:visibility="visible"
+        android:backgroundTint="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fingerPrintText">
+        <ImageView
+            android:id="@+id/googleImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:contentDescription="@string/finger_print"
+            android:src="@drawable/ic_fingerprint" />
+    </androidx.cardview.widget.CardView>
     <include
         android:visibility="gone"
         android:id="@+id/loadingView"
