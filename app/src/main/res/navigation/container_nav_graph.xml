@@ -35,6 +35,9 @@
         <action
             android:id="@+id/action_homeFragment_to_employeeListFragment"
             app:destination="@id/employeeListFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_reportsFragment"
+            app:destination="@id/reportsFragment" />
     </fragment>
     <fragment
         android:id="@+id/vacationFragment"
@@ -92,6 +95,11 @@
             app:argType="com.dev.dwamyadmin.domain.models.Employee"
             />
     </dialog>
+    <fragment
+        android:id="@+id/reportsFragment"
+        android:name="com.dev.dwamyadmin.features.reports.presentation.view.ReportsFragment"
+        android:label="fragment_reports"
+        tools:layout="@layout/fragment_reports" />
 
 
 </navigation>
