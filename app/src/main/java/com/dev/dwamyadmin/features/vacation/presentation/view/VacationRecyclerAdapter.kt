@@ -20,6 +20,7 @@ class VacationAdapter(
         fun bind(vacationItem: LeaveRequest) {
             binding.timestamp.text = vacationItem.issuedDate
             binding.title.text = vacationItem.requestType
+            binding.descTv.text = vacationItem.reason
             binding.dateFrom.text = vacationItem.dayFrom
             binding.dateTo.text = vacationItem.dayTo
             binding.vacAplName.text = vacationItem.employeeName

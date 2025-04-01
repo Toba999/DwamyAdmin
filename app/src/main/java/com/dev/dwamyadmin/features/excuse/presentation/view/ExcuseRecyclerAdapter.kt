@@ -24,6 +24,7 @@ class ExcuseAdapter(
                 ExcuseType.LATE -> "طلب تاخير"
                 ExcuseType.EARLY_LEAVE -> "طلب انصراف مبكر"
             }
+            binding.excuseDescTv.text = excuseItem.excuseReason
             binding.execuseDateFrom.text = excuseItem.excuseDateFrom
             binding.execuseDateTo.text = excuseItem.excuseDateTo
             binding.execuseDate.text = excuseItem.excuseDate
