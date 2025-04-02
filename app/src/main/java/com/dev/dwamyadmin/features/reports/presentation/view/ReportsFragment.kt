@@ -1,7 +1,9 @@
 package com.dev.dwamyadmin.features.reports.presentation.view
 
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -98,6 +100,35 @@ class ReportsFragment : Fragment() {
         }
     }
 
+    private fun simulateClickAt(view: View, x: Float, y: Float) {
+        val downTime = SystemClock.uptimeMillis()
+        val eventTime = SystemClock.uptimeMillis()
+
+        val motionEventDown = MotionEvent.obtain(
+            downTime,
+            eventTime,
+            MotionEvent.ACTION_DOWN,
+            x,
+            y,
+            0
+        )
+
+        val motionEventUp = MotionEvent.obtain(
+            downTime,
+            eventTime + 100,
+            MotionEvent.ACTION_UP,
+            x,
+            y,
+            0
+        )
+
+        view.dispatchTouchEvent(motionEventDown)
+        view.dispatchTouchEvent(motionEventUp)
+
+        motionEventDown.recycle()
+        motionEventUp.recycle()
+    }
+
     private fun setupRecyclerView() {
         reportsAdapter = ReportsAdapter(mutableListOf())
         binding.reportsRv.adapter = reportsAdapter
@@ -105,6 +136,11 @@ class ReportsFragment : Fragment() {
 
     private fun setupCalendar() {
         horizontalCalendar = binding.calenderView
+        horizontalCalendar.post {
+            val x = horizontalCalendar.width / 5f
+            val y = horizontalCalendar.height / 2f
+            simulateClickAt(horizontalCalendar, x, y)
+        }
         horizontalCalendar.setOnDateSelectListener { dateModel ->
             selectedDate = dateModel
             viewModel.getEmployeesByDate(
