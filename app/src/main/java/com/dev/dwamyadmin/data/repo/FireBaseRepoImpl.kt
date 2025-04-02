@@ -2,6 +2,7 @@ package com.dev.dwamyadmin.data.repo
 
 import android.net.Uri
 import com.dev.dwamyadmin.domain.models.Admin
+import com.dev.dwamyadmin.domain.models.Attendance
 import com.dev.dwamyadmin.domain.models.Employee
 import com.dev.dwamyadmin.domain.models.EmployeeAttendence
 import com.dev.dwamyadmin.domain.models.ExcuseRequest
@@ -9,11 +10,24 @@ import com.dev.dwamyadmin.domain.models.ExcuseStatus
 import com.dev.dwamyadmin.domain.models.LeaveRequest
 import com.dev.dwamyadmin.domain.models.LeaveStatus
 import com.dev.dwamyadmin.domain.repo.FireBaseRepo
+import com.dev.dwamyadmin.utils.FireStoreConstant.ADMINS_COLLECTION
+import com.dev.dwamyadmin.utils.FireStoreConstant.ADMIN_ID
+import com.dev.dwamyadmin.utils.FireStoreConstant.ATTENDANCE_COLLECTION
+import com.dev.dwamyadmin.utils.FireStoreConstant.ATTENDANCE_ID
+import com.dev.dwamyadmin.utils.FireStoreConstant.ATTENDANCE_STATUS
+import com.dev.dwamyadmin.utils.FireStoreConstant.DATE
+import com.dev.dwamyadmin.utils.FireStoreConstant.EMPLOYEES_COLLECTION
+import com.dev.dwamyadmin.utils.FireStoreConstant.EMPLOYEE_EMAIL
+import com.dev.dwamyadmin.utils.FireStoreConstant.EMPLOYEE_IMAGES_PATH
+import com.dev.dwamyadmin.utils.FireStoreConstant.EXCUSE_REQUESTS_COLLECTION
+import com.dev.dwamyadmin.utils.FireStoreConstant.LEAVE_REQUESTS_COLLECTION
 import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class FireBaseRepoImpl @Inject constructor(
@@ -21,18 +35,17 @@ class FireBaseRepoImpl @Inject constructor(
     storage: FirebaseStorage,
     private val sharedPrefManager: SharedPrefManager
 ) : FireBaseRepo {
-    private val storageReference = storage.reference.child("employee_images")
-
-    private val leaveRequestsCollection = firestore.collection("leave_requests")
-    private val excuseRequestsCollection = firestore.collection("excuse_requests")
-
-    private val adminsCollection = firestore.collection("admins")
-    private val employeesCollection = firestore.collection("employees")
+    private val storageReference = storage.reference.child(EMPLOYEE_IMAGES_PATH)
+    private val leaveRequestsCollection = firestore.collection(LEAVE_REQUESTS_COLLECTION)
+    private val excuseRequestsCollection = firestore.collection(EXCUSE_REQUESTS_COLLECTION)
+    private val employeesCollection = firestore.collection(EMPLOYEES_COLLECTION)
+    private val attendanceCollection = firestore.collection(ATTENDANCE_COLLECTION)
+    private val adminsCollection = firestore.collection(ADMINS_COLLECTION)
 
     override suspend fun isEmailTaken(email: String): Boolean {
         return try {
-            val adminQuery = adminsCollection.whereEqualTo("email", email).get().await()
-            val employeeQuery = employeesCollection.whereEqualTo("email", email).get().await()
+            val adminQuery = adminsCollection.whereEqualTo(EMPLOYEE_EMAIL, email).get().await()
+            val employeeQuery = employeesCollection.whereEqualTo(EMPLOYEE_EMAIL, email).get().await()
             !adminQuery.isEmpty || !employeeQuery.isEmpty
         } catch (e: Exception) {
             e.printStackTrace()
@@ -73,7 +86,7 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun loginAdmin(email: String, password: String): Boolean {
         return try {
-            val querySnapshot = adminsCollection.whereEqualTo("email", email).get().await()
+            val querySnapshot = adminsCollection.whereEqualTo(EMPLOYEE_EMAIL, email).get().await()
             if (!querySnapshot.isEmpty) {
                 val admin = querySnapshot.documents[0].toObject(Admin::class.java)
                 if (admin != null && admin.password == password) {
@@ -89,7 +102,7 @@ class FireBaseRepoImpl @Inject constructor(
     }
     override suspend fun getLeaveRequestsByAdmin(adminId: String): List<LeaveRequest> {
         return try {
-            val querySnapshot = leaveRequestsCollection.whereEqualTo("adminId", adminId).get().await()
+            val querySnapshot = leaveRequestsCollection.whereEqualTo(ADMIN_ID, adminId).get().await()
             querySnapshot.documents.mapNotNull { it.toObject(LeaveRequest::class.java) }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -99,7 +112,7 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun getExcuseRequestsByAdmin(adminId: String): List<ExcuseRequest> {
         return try {
-            val querySnapshot = excuseRequestsCollection.whereEqualTo("adminId", adminId).get().await()
+            val querySnapshot = excuseRequestsCollection.whereEqualTo(ADMIN_ID, adminId).get().await()
             querySnapshot.documents.mapNotNull { it.toObject(ExcuseRequest::class.java) }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -109,10 +122,10 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun updateLeaveRequestStatus(requestId: String, status: LeaveStatus): Boolean {
         return try {
-            val querySnapshot = leaveRequestsCollection.whereEqualTo("id", requestId).get().await()
+            val querySnapshot = leaveRequestsCollection.whereEqualTo(ATTENDANCE_ID, requestId).get().await()
             if (!querySnapshot.isEmpty) {
                 val document = querySnapshot.documents.first()
-                document.reference.update("status", status.name).await()
+                document.reference.update(ATTENDANCE_STATUS, status.name).await()
                 true
             } else {
                 println("No leave request found with ID: $requestId")
@@ -126,10 +139,10 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun updateExcuseRequestStatus(requestId: String, status: ExcuseStatus): Boolean {
         return try {
-            val querySnapshot = excuseRequestsCollection.whereEqualTo("id", requestId).get().await()
+            val querySnapshot = excuseRequestsCollection.whereEqualTo(ATTENDANCE_ID, requestId).get().await()
             if (!querySnapshot.isEmpty) {
                 val document = querySnapshot.documents.first()
-                document.reference.update("status", status.name).await()
+                document.reference.update(ATTENDANCE_STATUS, status.name).await()
                 true
             } else {
                 println("No leave request found with ID: $requestId")
@@ -142,7 +155,7 @@ class FireBaseRepoImpl @Inject constructor(
     }
     override suspend fun getEmployeesByAdmin(adminId: String): List<Employee> {
         return try {
-            val querySnapshot = employeesCollection.whereEqualTo("adminId", adminId).get().await()
+            val querySnapshot = employeesCollection.whereEqualTo(ADMIN_ID, adminId).get().await()
             querySnapshot.documents.mapNotNull { it.toObject(Employee::class.java) }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -150,9 +163,18 @@ class FireBaseRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun getEmployeesByDate(date: Date): List<EmployeeAttendence> {
-        TODO("Not yet implemented")
-
+    override suspend fun getEmployeesByDate(date: String, adminId: String): List<Attendance> {
+        return try {
+            val querySnapshot =
+                attendanceCollection.whereEqualTo(ADMIN_ID, adminId)
+                    .whereEqualTo(DATE, date)
+                    .get()
+                    .await()
+            querySnapshot.documents.mapNotNull { it.toObject(Attendance::class.java) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
     }
 
     override suspend fun deleteEmployee(employeeId: String): Boolean {

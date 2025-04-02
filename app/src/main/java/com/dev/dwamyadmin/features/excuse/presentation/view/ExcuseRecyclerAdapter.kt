@@ -10,9 +10,9 @@ import com.dev.dwamyadmin.domain.models.ExcuseStatus
 import com.dev.dwamyadmin.domain.models.ExcuseType
 
 class ExcuseAdapter(
-    private val excuseItems: MutableList<ExcuseRequest>, // Use MutableList for dynamic updates
-    private val onAcceptClickListener: (ExcuseRequest, Int) -> Unit, // Pass position for updates
-    private val onDeclineClickListener: (ExcuseRequest, Int) -> Unit // Pass position for updates
+    private val excuseItems: MutableList<ExcuseRequest>,
+    private val onAcceptClickListener: (ExcuseRequest, Int) -> Unit,
+    private val onDeclineClickListener: (ExcuseRequest, Int) -> Unit
 ) : RecyclerView.Adapter<ExcuseAdapter.ExcuseViewHolder>() {
 
     inner class ExcuseViewHolder(private val binding: ExcuseItemBinding) :
@@ -54,7 +54,6 @@ class ExcuseAdapter(
                 }
             }
 
-            // Set click listeners for the buttons
             binding.acceptExecuseBtn.setOnClickListener {
                 onAcceptClickListener(excuseItem, adapterPosition)
             }
@@ -79,7 +78,6 @@ class ExcuseAdapter(
         return excuseItems.size
     }
 
-    // Function to update the status of an item
     fun updateItemStatus(position: Int, newStatus: ExcuseStatus) {
         if (position in 0 until excuseItems.size) {
             excuseItems[position].status = newStatus

@@ -46,6 +46,7 @@ places = "3.5.0"
 firebase = "33.7.0"
 legacySupportV4 = "1.0.0"
 fragmentKtx = "1.8.5"
+singleRowCalednar = "1.0.0"
 
 [libraries]
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
@@ -101,6 +102,7 @@ androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fr
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidNavigation" }
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
+single-row-calednar = { module = "com.michalsvec:single-row-calednar", version.ref = "singleRowCalednar" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,47 +1,101 @@
 package com.dev.dwamyadmin.features.reports.presentation.view
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.dev.dwamyadmin.databinding.FragmentReportsBinding
-import com.dev.dwamyadmin.domain.models.EmployeeAttendence
-import com.google.firebase.Timestamp
+import com.dev.dwamyadmin.features.reports.presentation.viewModel.ReportsUiState
+import com.dev.dwamyadmin.features.reports.presentation.viewModel.ReportsViewModel
+import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.sahana.horizontalcalendar.HorizontalCalendar
-import com.sahana.horizontalcalendar.OnDateSelectListener
 import com.sahana.horizontalcalendar.model.DateModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class ReportsFragment : Fragment() {
-    private lateinit var binding: FragmentReportsBinding
+
+    private var _binding: FragmentReportsBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var reportsAdapter: ReportsAdapter
     private lateinit var horizontalCalendar: HorizontalCalendar
     private lateinit var selectedDate: DateModel
+
+    private val viewModel: ReportsViewModel by viewModels()
+
+    @Inject
+    lateinit var sharedPrefManager: SharedPrefManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentReportsBinding.inflate(inflater, container, false)
+        _binding = FragmentReportsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         selectedDate = getCurrentDateModel()
+        val adminId = sharedPrefManager.getAdminId()
+        viewModel.getEmployeesByDate(formatDateModel(selectedDate), adminId.toString())
         setupRecyclerView()
         setupCalendar()
-        loadDataForSelectedDate()
+        observeViewModel()
+        binding.reportBackBtn.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                when (state) {
+                    is ReportsUiState.Loading -> {
+                        showLoading(true)
+                        binding.emptyStateTv.visibility = View.GONE
+                        binding.reportsRv.visibility = View.GONE
+                    }
+                    is ReportsUiState.Success -> {
+                        showLoading(false)
+                        binding.reportsRv.visibility = View.VISIBLE
+                        binding.emptyStateTv.visibility = View.GONE
+                        reportsAdapter.updateList(state.attendanceList)
+                    }
+                    is ReportsUiState.Error -> {
+                        showLoading(false)
+                        binding.emptyStateTv.visibility = View.VISIBLE
+                        binding.reportsRv.visibility = View.GONE
+                        showToast(state.message)
+                    }
+                    is ReportsUiState.Empty -> {
+                        showLoading(false)
+                        binding.emptyStateTv.visibility = View.VISIBLE
+                        binding.reportsRv.visibility = View.GONE
+                        reportsAdapter.updateList(emptyList())
+                        showToast("لا توجد سجلات حضور")
+                    }
+                    else -> Unit
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -49,128 +103,44 @@ class ReportsFragment : Fragment() {
         binding.reportsRv.adapter = reportsAdapter
     }
 
-    private fun getCurrentDateModel(): DateModel {
-        val calendar = Calendar.getInstance()
-        return DateModel().apply {
-            day = calendar.get(Calendar.DAY_OF_MONTH)
-            year = calendar.get(Calendar.YEAR)
-            monthNumber = calendar.get(Calendar.MONTH) + 1
-            month = SimpleDateFormat("MMM", Locale.getDefault()).format(calendar.time)
-            dayOfWeek = SimpleDateFormat("EEE", Locale.getDefault()).format(calendar.time)
-        }
-    }
-
     private fun setupCalendar() {
         horizontalCalendar = binding.calenderView
-        horizontalCalendar.setOnDateSelectListener(OnDateSelectListener { dateModel ->
+        horizontalCalendar.setOnDateSelectListener { dateModel ->
             selectedDate = dateModel
-            loadDataForSelectedDate()
-        })
-
-    }
-
-    private fun loadDataForSelectedDate() {
-        binding.emptyStateTv.visibility = View.GONE
-        binding.reportsRv.visibility = View.GONE
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            val employeeList = getEmployeeAttendanceForDate(selectedDate)
-            reportsAdapter.updateList(employeeList)
-            updateEmptyStateVisibility(employeeList.isEmpty())
-        }, 1000)
-    }
-
-    private fun getEmployeeAttendanceForDate(dateModel: DateModel): List<EmployeeAttendence> {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.YEAR, dateModel.year)
-            set(Calendar.MONTH, dateModel.monthNumber - 1)
-            set(Calendar.DAY_OF_MONTH, dateModel.day)
-        }
-
-        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-
-        return when {
-            // Weekend - no data
-            dayOfWeek == Calendar.FRIDAY || dayOfWeek == Calendar.SATURDAY -> emptyList()
-
-            // First day of month - special schedule
-            dayOfMonth == 1 -> listOf(
-                EmployeeAttendence(
-                    id = "001",
-                    name = "أحمد محمد",
-                    profession = "مدير",
-                    checkIn = Timestamp(createTime(calendar, 8, 30)),
-                    checkOut = Timestamp(createTime(calendar, 15, 30))
-                ),
-                EmployeeAttendence(
-                    id = "002",
-                    name = "سارة علي",
-                    profession = "سكرتيرة",
-                    checkIn = Timestamp(createTime(calendar, 9, 15)),
-                    checkOut = Timestamp(createTime(calendar, 16, 45))
-                )
-            )
-
-            // Mid-month - normal schedule
-            dayOfMonth in 10..20 -> listOf(
-                EmployeeAttendence(
-                    id = "003",
-                    name = "خالد عبدالله",
-                    profession = "مطور",
-                    checkIn = Timestamp(createTime(calendar, 9, 0)),
-                    checkOut = Timestamp(createTime(calendar, 17, 0))
-                ),
-                EmployeeAttendence(
-                    id = "004",
-                    name = "نورة أحمد",
-                    profession = "مصممة",
-                    checkIn = Timestamp(createTime(calendar, 8, 45)),
-                    checkOut = Timestamp(createTime(calendar, 16, 30))
-                ),
-                EmployeeAttendence(
-                    id = "005",
-                    name = "عمر فاروق",
-                    profession = "مدير مشاريع",
-                    checkIn = Timestamp(createTime(calendar, 10, 0)),
-                    checkOut = Timestamp(createTime(calendar, 18, 0))
-                )
-            )
-
-            // End of month - reduced staff
-            else -> listOf(
-                EmployeeAttendence(
-                    id = "006",
-                    name = "ليلى كمال",
-                    profession = "محاسبة",
-                    checkIn = Timestamp(createTime(calendar, 8, 0)),
-                    checkOut = Timestamp(createTime(calendar, 16, 0))
-                ),
-                EmployeeAttendence(
-                    id = "007",
-                    name = "ياسر وليد",
-                    profession = "مدير مبيعات",
-                    checkIn = Timestamp(createTime(calendar, 10, 30)),
-                    checkOut = Timestamp(createTime(calendar, 19, 0))
-                )
+            viewModel.getEmployeesByDate(
+                formatDateModel(selectedDate),
+                sharedPrefManager.getAdminId().toString()
             )
         }
     }
 
-    private fun createTime(baseCalendar: Calendar, hour: Int, minute: Int): Date {
-        return Calendar.getInstance().apply {
-            set(Calendar.YEAR, baseCalendar.get(Calendar.YEAR))
-            set(Calendar.MONTH, baseCalendar.get(Calendar.MONTH))
-            set(Calendar.DAY_OF_MONTH, baseCalendar.get(Calendar.DAY_OF_MONTH))
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.time
+    private fun getCurrentDateModel(): DateModel {
+        val calendar = Calendar.getInstance()
+         val dateModel = DateModel().apply {
+             day = calendar.get(Calendar.DAY_OF_MONTH)
+             year = calendar.get(Calendar.YEAR)
+             monthNumber = calendar.get(Calendar.MONTH) + 1
+             month = SimpleDateFormat("MMM", Locale.getDefault()).format(calendar.time)
+             dayOfWeek = SimpleDateFormat("EEE", Locale.getDefault()).format(calendar.time)
+         }
+        return dateModel
     }
 
-    private fun updateEmptyStateVisibility(isEmpty: Boolean) {
-        binding.emptyStateTv.visibility = if (isEmpty) View.VISIBLE else View.GONE
-        binding.reportsRv.visibility = if (isEmpty) View.GONE else View.VISIBLE
+    private fun formatDateModel(dateModel: DateModel): String {
+        val date = LocalDate.of(dateModel.year, dateModel.monthNumber, dateModel.day)
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    }
+
+    private fun showLoading(isVisible: Boolean) {
+        binding.loadingView.root.isVisible = isVisible
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -11,6 +11,7 @@ data class Attendance(
     val employeeId: String = "",
     val adminId: String = "",
     val employeeName: String = "",
+    val profession: String = "",
     val checkInTime: String = "",
     val checkOutTime: String = "",
     val checkInLat: Double = 0.0,
@@ -18,6 +19,8 @@ data class Attendance(
     val checkOutLat: Double = 0.0,
     val checkOutLng: Double = 0.0,
     val date: String = "",
+    val startTime : String = "",
+    val endTime : String = "",
     val status: AttendanceStatus? = null
 ) : Parcelable
 

@@ -2,6 +2,7 @@ package com.dev.dwamyadmin.domain.repo
 
 import android.net.Uri
 import com.dev.dwamyadmin.domain.models.Admin
+import com.dev.dwamyadmin.domain.models.Attendance
 import com.dev.dwamyadmin.domain.models.Employee
 import com.dev.dwamyadmin.domain.models.EmployeeAttendence
 import com.dev.dwamyadmin.domain.models.ExcuseRequest
@@ -20,7 +21,7 @@ interface FireBaseRepo {
     suspend fun updateLeaveRequestStatus(requestId: String, status: LeaveStatus): Boolean
     suspend fun updateExcuseRequestStatus(requestId: String, status: ExcuseStatus): Boolean
     suspend fun getEmployeesByAdmin(adminId: String): List<Employee>
-    suspend fun getEmployeesByDate(date: Date): List<EmployeeAttendence>
+    suspend fun getEmployeesByDate(date: String,adminId : String): List<Attendance>
     suspend fun deleteEmployee(employeeId: String): Boolean
     suspend fun uploadImage(imageUri: Uri): String?
 }

@@ -9,9 +9,9 @@ import com.dev.dwamyadmin.domain.models.LeaveStatus
 import com.dev.dwamyadmin.domain.models.toArabic
 
 class VacationAdapter(
-    private val vacationItems: MutableList<LeaveRequest>, // Use MutableList for dynamic updates
-    private val onAcceptClickListener: (LeaveRequest, Int) -> Unit, // Pass position for updates
-    private val onDeclineClickListener: (LeaveRequest, Int) -> Unit // Pass position for updates
+    private val vacationItems: MutableList<LeaveRequest>,
+    private val onAcceptClickListener: (LeaveRequest, Int) -> Unit,
+    private val onDeclineClickListener: (LeaveRequest, Int) -> Unit
 ) : RecyclerView.Adapter<VacationAdapter.VacationViewHolder>() {
 
     inner class VacationViewHolder(private val binding: VacationItemBinding) :
@@ -26,7 +26,6 @@ class VacationAdapter(
             binding.vacAplName.text = vacationItem.employeeName
             binding.status.text = vacationItem.status.toArabic()
 
-            // Set initial visibility of buttons based on the status
             when (vacationItem.status) {
                 LeaveStatus.ACCEPTED -> {
                     binding.acceptVacBtn.visibility = View.GONE
@@ -45,7 +44,6 @@ class VacationAdapter(
                 }
             }
 
-            // Set click listeners for the buttons
             binding.acceptVacBtn.setOnClickListener {
                 onAcceptClickListener(vacationItem, adapterPosition)
             }
@@ -70,7 +68,6 @@ class VacationAdapter(
         return vacationItems.size
     }
 
-    // Function to update the status of an item
     fun updateItemStatus(position: Int, newStatus: LeaveStatus) {
         if (position in 0 until vacationItems.size) {
             vacationItems[position].status = newStatus

@@ -58,7 +58,11 @@ class ContainerFragment : Fragment() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.employeeListFragment, R.id.mapFragment, R.id.successDialogFragment, R.id.registerEmployeeFragment -> {
+                R.id.reportsFragment,
+                R.id.employeeListFragment,
+                R.id.mapFragment,
+                R.id.successDialogFragment,
+                R.id.registerEmployeeFragment -> {
                     binding.bottomNavView.visibility = View.GONE
                 }
 
