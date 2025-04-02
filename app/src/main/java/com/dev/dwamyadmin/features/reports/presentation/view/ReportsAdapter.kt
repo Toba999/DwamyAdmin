@@ -23,27 +23,37 @@ class ReportsAdapter(
 
             val checkInTime = formatTime(
                 employee.checkInTime.toString(),
-                "حضور في ",
-                employee.startTime,
-                employee.endTime
+                "حضور في "
             )
             binding.empClockIn.text = checkInTime
             binding.empClockIn.setTextColor(Color.GREEN)
 
             val checkOutTime = formatTime(
                 employee.checkOutTime.toString(),
-                "انصراف في ",
-                employee.startTime,
-                employee.endTime
+                "انصراف في "
             )
             binding.empClockOut.text = checkOutTime
+            binding.empClockIn.setTextColor(
+                formatTimeColor(
+                    employee.checkInTime.toString(),
+                    employee.startTime,
+                    employee.endTime,
+                    true
+                )
+            )
+            binding.empClockOut.setTextColor(
+                formatTimeColor(
+                    employee.checkOutTime.toString(),
+                    employee.startTime,
+                    employee.endTime,
+                    false
+                )
+            )
         }
 
         private fun formatTime(
             timeStr: String,
-            prefix: String,
-            attendTime: String,
-            leaveTime: String
+            prefix: String
         ): String {
             try {
                 // Parse the provided time (e.g., "12:03")
@@ -58,27 +68,48 @@ class ReportsAdapter(
                 val formattedHour = if (hour % 12 == 0) 12 else hour % 12
                 val minuteStr = minute.toString().padStart(2, '0')
                 val amPm = if (isAM) "ص" else "م"
-
-                // Check if before attendance or after leaving
-                val attendHour = attendTime.toIntOrNull() ?: 9   // Default 9 AM
-                val leaveHour = leaveTime.toIntOrNull() ?: 18   // Default 6 PM
-                val isAfterAttend = hour > attendHour
-                val isBeforeLeave = hour <= leaveHour
-
-                val color = when {
-                    isAfterAttend -> Color.RED  // Early check-in
-                    isBeforeLeave -> Color.RED   // Late check-out
-                    else -> Color.GREEN         // Normal case
-                }
-
-                // Apply color
-                binding.empClockIn.setTextColor(color)
-                binding.empClockOut.setTextColor(color)
-
                 return "$prefix $formattedHour:$minuteStr $amPm"
             } catch (e: Exception) {
                 e.printStackTrace()
                 return "$prefix لم يسجل بعد "
+            }
+        }
+
+        private fun formatTimeColor(
+            timeStr: String,
+            attendTime: String,
+            leaveTime: String,
+            isAttend: Boolean
+        ): Int {
+            try {
+                // Parse the provided time (e.g., "12:03")
+                val parts = timeStr.split(":")
+
+                val hour = parts[0].toInt()
+                val minute = parts[1].toInt()
+
+
+                // Check if before attendance or after leaving
+                val attendHour = attendTime.toIntOrNull() ?: 9   // Default 9 AM
+                val leaveHour = leaveTime.toIntOrNull() ?: 18   // Default 6 PM
+                val isAfterAttend = hour > attendHour || (hour == attendHour && minute > 0)
+                val isBeforeLeave = hour < leaveHour
+
+                return if (isAttend) {
+                    when {
+                        isAfterAttend -> Color.RED  // Early check-in
+                        else -> Color.GREEN         // Normal case
+                    }
+                } else {
+                    when {
+                        isBeforeLeave -> Color.RED   // Late check-out
+                        else -> Color.GREEN         // Normal case
+                    }
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return Color.RED
             }
         }
     }
