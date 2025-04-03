@@ -152,9 +152,9 @@ class RegisterFragment : Fragment() {
                         binding.timeRangeSlider.values[0].toInt(),
                         binding.timeRangeSlider.values[1].toInt(),
                         imageUri.toString(),
-                        address.toString(),
-                        latitude ?: 0.0,
-                        longitude?: 0.0,
+                        address ?: employee?.address ?: "",
+                        latitude ?: employee?.latitude ?:0.0,
+                        longitude?: employee?.longitude ?:0.0,
                         binding.locationArea.text.toString().toInt(),
                         employee?.id
                     )
