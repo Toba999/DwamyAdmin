@@ -32,6 +32,7 @@ class SplashFragment : Fragment() {
 
     private var _binding: FragmentSplashBinding? = null
     private val binding get() = _binding!!
+    private var isDialogShowing = false
 
 
     override fun onCreateView(
@@ -118,6 +119,9 @@ class SplashFragment : Fragment() {
     }
 
     private fun showEnableGPSDialog() {
+        if (isDialogShowing) return // Prevent multiple dialogs
+
+        isDialogShowing = true
         AlertDialog.Builder(requireContext())
             .setTitle("تشغيل الـ GPS")
             .setMessage("يرجى تفعيل الـ GPS لاختيار الموقع.")
@@ -125,9 +129,9 @@ class SplashFragment : Fragment() {
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
             .setNegativeButton("إلغاء", null)
+            .setOnDismissListener { isDialogShowing = false } // Reset when dismissed
             .show()
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
