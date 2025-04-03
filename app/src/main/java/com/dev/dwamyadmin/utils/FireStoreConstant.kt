@@ -8,6 +8,7 @@ object FireStoreConstant {
     const val ADMINS_COLLECTION = "admins"
     const val EMPLOYEE_EMAIL = "email"
     const val ADMIN_ID = "adminId"
+    const val EMPLOYEE_ID = "employeeId"
     const val PREFS_NAME = "admin_prefs"
     const val KEY_ADMIN_ID = "admin_id"
     const val KEY_ADMIN_NAME = "admin_name"

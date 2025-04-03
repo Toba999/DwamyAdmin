@@ -4,7 +4,6 @@ import android.net.Uri
 import com.dev.dwamyadmin.domain.models.Admin
 import com.dev.dwamyadmin.domain.models.Attendance
 import com.dev.dwamyadmin.domain.models.Employee
-import com.dev.dwamyadmin.domain.models.EmployeeAttendence
 import com.dev.dwamyadmin.domain.models.ExcuseRequest
 import com.dev.dwamyadmin.domain.models.ExcuseStatus
 import com.dev.dwamyadmin.domain.models.LeaveRequest
@@ -18,6 +17,7 @@ import com.dev.dwamyadmin.utils.FireStoreConstant.ATTENDANCE_STATUS
 import com.dev.dwamyadmin.utils.FireStoreConstant.DATE
 import com.dev.dwamyadmin.utils.FireStoreConstant.EMPLOYEES_COLLECTION
 import com.dev.dwamyadmin.utils.FireStoreConstant.EMPLOYEE_EMAIL
+import com.dev.dwamyadmin.utils.FireStoreConstant.EMPLOYEE_ID
 import com.dev.dwamyadmin.utils.FireStoreConstant.EMPLOYEE_IMAGES_PATH
 import com.dev.dwamyadmin.utils.FireStoreConstant.EXCUSE_REQUESTS_COLLECTION
 import com.dev.dwamyadmin.utils.FireStoreConstant.LEAVE_REQUESTS_COLLECTION
@@ -25,9 +25,6 @@ import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 class FireBaseRepoImpl @Inject constructor(
@@ -179,7 +176,18 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun deleteEmployee(employeeId: String): Boolean {
         return try {
+            val leaveRequests = leaveRequestsCollection.whereEqualTo(EMPLOYEE_ID, employeeId).get().await()
+            for (document in leaveRequests.documents) {
+                document.reference.delete().await()
+            }
+
+            val excuseRequests = excuseRequestsCollection.whereEqualTo(EMPLOYEE_ID, employeeId).get().await()
+            for (document in excuseRequests.documents) {
+                document.reference.delete().await()
+            }
+
             employeesCollection.document(employeeId).delete().await()
+
             true
         } catch (e: Exception) {
             e.printStackTrace()
