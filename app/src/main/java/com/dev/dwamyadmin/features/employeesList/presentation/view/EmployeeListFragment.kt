@@ -59,17 +59,34 @@ class EmployeeListFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = EmployeesAdapter(
             mutableListOf(),
-            onDeleteClickListener = { employee -> handleDeleteClick(employee) }
+            onDeleteClickListener = { employee -> handleDeleteClick(employee) },
+            onEditClickListener = { employee -> handleEditClick(employee) }
         )
         binding.employeeRv.layoutManager = LinearLayoutManager(requireContext())
         binding.employeeRv.adapter = adapter
     }
-    private fun handleDeleteClick(employee: Employee) {
-        findNavController().navigate(EmployeeListFragmentDirections.actionEmployeeListFragmentToDeleteDialogFragment(employee))
+
+    private fun handleEditClick(employee: Employee) {
+        findNavController().navigate(
+            EmployeeListFragmentDirections.actionEmployeeListFragmentToRegisterEmployeeFragment(
+                isAdmin = false,
+                employee
+            )
+        )
     }
+
+    private fun handleDeleteClick(employee: Employee) {
+        findNavController().navigate(
+            EmployeeListFragmentDirections.actionEmployeeListFragmentToDeleteDialogFragment(
+                employee
+            )
+        )
+    }
+
     private fun showLoading(isShown: Boolean) {
         binding.loadingView.root.isVisible = isShown
     }
+
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.employees.collect { employees ->
@@ -89,6 +106,7 @@ class EmployeeListFragment : Fragment() {
             }
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

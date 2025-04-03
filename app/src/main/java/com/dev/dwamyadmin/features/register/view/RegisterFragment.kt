@@ -3,6 +3,7 @@ package com.dev.dwamyadmin.features.register.view
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
+import android.util.Half.toFloat
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
 import com.dev.dwamyadmin.R
 import com.dev.dwamyadmin.databinding.FragmentRegisterBinding
+import com.dev.dwamyadmin.domain.models.Employee
 import com.dev.dwamyadmin.features.register.models.RegisterState
 import com.dev.dwamyadmin.features.register.viewModel.RegisterViewModel
 import com.dev.dwamyadmin.utils.SharedPrefManager
@@ -46,6 +48,7 @@ class RegisterFragment : Fragment() {
     private var longitude : Double? = null
     private var address : String? = null
     var isAdmin : Boolean? = null
+    var employee : Employee? = null
 
     @Inject
     lateinit var sharedPrefManager: SharedPrefManager
@@ -68,7 +71,8 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isAdmin = args.isAdmin
-        setupUI(isAdmin == true)
+        employee = args.employee
+        setupUI(isAdmin == true,employee)
         setupListeners(isAdmin == true)
         observeViewModel()
         parentFragmentManager.setFragmentResultListener("locationRequestKey", viewLifecycleOwner) { _, bundle ->
@@ -79,7 +83,7 @@ class RegisterFragment : Fragment() {
         }
     }
 
-    private fun setupUI(isAdmin: Boolean) {
+    private fun setupUI(isAdmin: Boolean,employee: Employee?) {
         if (isAdmin) {
             binding.timeRangeSlider.visibility = View.GONE
             binding.timeTitle.visibility = View.GONE
@@ -89,6 +93,17 @@ class RegisterFragment : Fragment() {
             binding.uploadedImage.visibility = View.GONE
             binding.empProfession.visibility = View.GONE
             binding.registerTitle.text = "تسجيل حساب"
+        }
+        employee?.let {
+            binding.adminName.setText(it.name)
+            binding.adminEmail.setText(it.email)
+            binding.adminPassword.setText(it.password)
+            binding.adminLocation.setText(it.address)
+            binding.empProfession.setText(it.profession)
+            binding.workDays.setText(it.workDays)
+            binding.locationArea.setText(it.area.toString())
+            binding.timeRangeSlider.setValues(it.startTime.toFloat(), it.endTime.toFloat())
+            binding.registerButton.text = "تعديل"
         }
     }
 
@@ -140,7 +155,8 @@ class RegisterFragment : Fragment() {
                         address.toString(),
                         latitude ?: 0.0,
                         longitude?: 0.0,
-                        binding.locationArea.text.toString().toInt()
+                        binding.locationArea.text.toString().toInt(),
+                        employee?.id
                     )
                 }
             }
@@ -155,6 +171,8 @@ class RegisterFragment : Fragment() {
         val password = binding.adminPassword.text.toString().trim()
         val profession = binding.empProfession.text.toString().trim()
         val area = binding.locationArea.text.toString()
+        val workDays = binding.workDays.text.toString()
+        val location = binding.adminLocation.text.toString()
 
         // Validate name (Required for both admin & employee)
         if (name.isEmpty()) {
@@ -206,8 +224,13 @@ class RegisterFragment : Fragment() {
         }
 
         // Validate location fields (Required only for employees)
-        if (latitude == null || longitude == null || address.isNullOrEmpty()) {
-            binding.adminEmail.error = "الموقع مطلوب"
+        if (location.isEmpty()) {
+            binding.adminLocation.error = "الموقع مطلوب"
+            isValid = false
+        }
+
+        if (workDays.isEmpty()) {
+            binding.workDays.error = "اختر أيام الأسبوع"
             isValid = false
         }
 

@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Employee(
-    val id: String = "",  // Firestore ID
+    val id: String? = null,  // Firestore ID
     val adminId: String = "",  // Links employee to their admin
     val name: String = "",
     val email: String = "",

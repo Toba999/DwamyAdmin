@@ -68,18 +68,32 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun registerEmployee(employee: Employee): Boolean {
         return try {
-            if (isEmailTaken(employee.email)) {
-                throw IllegalArgumentException("Email is already in use")
+            // Check if the email is already taken
+            if (isEmailTaken(employee.email) && employee.id == "0") {
+                throw IllegalArgumentException("البريد الإلكتروني مستخدم بالفعل")
             }
-            val documentRef = employeesCollection.document()
-            val employeeWithId = employee.copy(id = documentRef.id)
-            documentRef.set(employeeWithId).await()
+
+            // Check if the employee with the same ID already exists
+            val existingEmployeeQuery = employeesCollection.whereEqualTo(ATTENDANCE_ID, employee.id).get().await()
+
+            if (existingEmployeeQuery.isEmpty) {
+                // If no employee exists with the same ID, create a new one
+                val documentRef = employeesCollection.document()
+                val employeeWithId = employee.copy(id = documentRef.id)
+                documentRef.set(employeeWithId).await()
+            } else {
+                // If the employee exists, update the existing document with the new data
+                val existingEmployeeDoc = existingEmployeeQuery.documents.first()
+                existingEmployeeDoc.reference.set(employee).await()
+            }
+
             true
         } catch (e: Exception) {
             e.printStackTrace()
             false
         }
     }
+
 
     override suspend fun loginAdmin(email: String, password: String): Boolean {
         return try {

@@ -66,6 +66,12 @@
             android:name="isAdmin"
             app:argType="boolean"
             android:defaultValue="false" />
+        <argument
+            android:name="employee"
+            app:argType="com.dev.dwamyadmin.domain.models.Employee"
+            android:defaultValue="@null"
+            app:nullable="true"
+            />
         <action
             android:id="@+id/action_registerEmployeeFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
@@ -85,6 +91,9 @@
         <action
             android:id="@+id/action_employeeListFragment_to_deleteDialogFragment"
             app:destination="@id/deleteDialogFragment" />
+        <action
+            android:id="@+id/action_employeeListFragment_to_registerEmployeeFragment"
+            app:destination="@id/registerEmployeeFragment" />
     </fragment>
     <dialog
         android:id="@+id/deleteDialogFragment"

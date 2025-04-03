@@ -8,7 +8,8 @@ import com.dev.dwamyadmin.domain.models.Employee
 
 class EmployeesAdapter(
     private val employeesList: MutableList<Employee>, // Use MutableList for dynamic updates
-    private val onDeleteClickListener: (Employee) -> Unit, // Pass position for updates
+    private val onDeleteClickListener: (Employee) -> Unit,
+    private val onEditClickListener: (Employee) -> Unit // Pass position for updates
 ) : RecyclerView.Adapter<EmployeesAdapter.EmployeeViewHolder>() {
 
     inner class EmployeeViewHolder(private val binding: EmployeeItemBinding) :
@@ -21,6 +22,9 @@ class EmployeesAdapter(
 
             binding.deleteBtn.setOnClickListener {
                 onDeleteClickListener(employee)
+            }
+            binding.btnEdit.setOnClickListener {
+                onEditClickListener(employee)
             }
         }
     }

@@ -48,7 +48,7 @@ class DeleteDialogFragment : DialogFragment() {
         }
         binding.apply {
             btnOk.setOnClickListener {
-                viewModel.deleteEmployee(args.employee.id)
+                viewModel.deleteEmployee(args.employee.id.toString())
                 setFragmentResult("delete_request", Bundle().apply {
                     putBoolean("isDeleted", true)
                 })
