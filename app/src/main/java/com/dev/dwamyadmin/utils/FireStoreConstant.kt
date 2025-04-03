@@ -16,4 +16,5 @@ object FireStoreConstant {
     const val ATTENDANCE_ID = "id"
     const val ATTENDANCE_STATUS = "status"
     const val DATE = "date"
+    const val KEY_CITY_NAME = "key_city_name"
 }

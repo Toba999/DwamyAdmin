@@ -1,16 +1,23 @@
 package com.dev.dwamyadmin.features.home.presentation.view
 
+import android.Manifest
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresPermission
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.dev.dwamyadmin.R
 import com.dev.dwamyadmin.databinding.FragmentHomeBinding
 import com.dev.dwamyadmin.utils.SharedPrefManager
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -22,7 +29,7 @@ class HomeFragment : Fragment() {
 
     @Inject
     lateinit var sharedPrefManager: SharedPrefManager
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,8 +38,23 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        if(sharedPrefManager.getCityName().isNullOrEmpty()) {
+            fusedLocationClient.lastLocation.addOnSuccessListener {
+                if (it != null) {
+                    val latitude = it.latitude
+                    val longitude = it.longitude
+                    val location = getTheCityName(latitude, longitude)
+                    sharedPrefManager.setCityName(location ?: "")
+                    binding.locationText.text = location
+                }
+            }
+        }else{
+            binding.locationText.text = sharedPrefManager.getCityName()
+        }
         binding.apply{
             nameText.text = sharedPrefManager.getAdminName()
             addEmpBtn.setOnClickListener {
@@ -59,6 +81,16 @@ class HomeFragment : Fragment() {
 
     }
 
+    fun getTheCityName(lat: Double, lon: Double): String? {
+        val geocoder = Geocoder(requireContext(), Locale("ar"))  // Arabic locale
+        val addressList: List<Address>? = geocoder.getFromLocation(lat, lon, 1)
+
+        return if (!addressList.isNullOrEmpty()) {
+            addressList[0].locality ?: "المدينة غير متاحة"
+        } else {
+            "المدينة غير متاحة"
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

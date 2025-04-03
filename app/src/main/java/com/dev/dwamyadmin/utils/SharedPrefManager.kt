@@ -6,6 +6,7 @@ import androidx.core.content.edit
 import com.dev.dwamyadmin.utils.FireStoreConstant.KEY_ADMIN_EMAIL
 import com.dev.dwamyadmin.utils.FireStoreConstant.KEY_ADMIN_ID
 import com.dev.dwamyadmin.utils.FireStoreConstant.KEY_ADMIN_NAME
+import com.dev.dwamyadmin.utils.FireStoreConstant.KEY_CITY_NAME
 import com.dev.dwamyadmin.utils.FireStoreConstant.PREFS_NAME
 import javax.inject.Inject
 
@@ -30,5 +31,20 @@ class SharedPrefManager @Inject constructor(context: Context) {
 
     fun clearAdminData() {
         sharedPreferences.edit { clear() }
+    }
+    fun setCityName(cityName: String) {
+        sharedPreferences.edit {
+            putString(KEY_CITY_NAME, cityName)
+        }
+    }
+
+    fun getCityName(): String? {
+        return sharedPreferences.getString(KEY_CITY_NAME, null)
+    }
+
+    fun clearCityName() {
+        sharedPreferences.edit {
+            remove(KEY_CITY_NAME)
+        }
     }
 }

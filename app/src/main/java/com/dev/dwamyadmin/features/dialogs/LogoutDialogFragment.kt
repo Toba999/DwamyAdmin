@@ -35,6 +35,7 @@ class LogoutDialogFragment : DialogFragment() {
         binding.apply {
             btnOk.setOnClickListener {
                 sharedPrefManager.clearAdminData()
+                sharedPrefManager.clearCityName()
                 dismiss()
                 navigateToLogin()
             }

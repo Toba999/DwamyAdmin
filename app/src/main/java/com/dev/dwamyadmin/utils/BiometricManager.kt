@@ -3,49 +3,86 @@ package com.dev.dwamyadmin.utils
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
+import java.security.InvalidKeyException
+import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 
 object BiometricManager {
 
-    fun generateKeyForBiometricAuthentication(): Boolean {
-        val keyName = "biometricKey"
+    private const val KEY_NAME = "biometricKey"
+    private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
 
-        // Prepare the KeyGenParameterSpec to invalidate the key when biometric enrollment changes
-        val keyGenParameterSpec = KeyGenParameterSpec.Builder(keyName, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-            .setInvalidatedByBiometricEnrollment(true) // Invalidate the key if biometric enrollment changes
-            .build()
-
-        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
-        keyGenerator.init(keyGenParameterSpec)
-
-        // Generate the key
-        val secretKey: SecretKey = keyGenerator.generateKey()
-
-        // Now let's attempt to use the key (e.g., for encryption) and check if it's invalidated
+    fun generateSecretKey() {
         try {
-            // Attempt to use the key for encryption (or any other cryptographic operation)
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            // Use the cipher (e.g., to encrypt data)
+            val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
 
-            // If successful, the key is valid
-            println("Key is valid and can be used.")
-            return true
+            if (keyStore.containsAlias(KEY_NAME)) return // If key exists, do nothing
 
-        } catch (e: KeyPermanentlyInvalidatedException) {
-            // This exception will be thrown if the key has been invalidated (e.g., due to biometric changes)
-            println("Key has been invalidated. Biometric enrollment might have changed.")
-            return true
+            val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE_PROVIDER)
+            val keyGenParameterSpec = KeyGenParameterSpec.Builder(
+                KEY_NAME,
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            )
+                .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                .setUserAuthenticationRequired(true)
+                .setInvalidatedByBiometricEnrollment(true) // Key gets invalidated if biometrics change
+                .build()
+
+            keyGenerator.init(keyGenParameterSpec)
+            keyGenerator.generateKey()
 
         } catch (e: Exception) {
-            // Handle other exceptions
-            println("Error occurred while using the key: ${e.message}")
-            return true
+            e.printStackTrace()
+        }
+    }
 
+    fun getCipher(): Cipher? {
+        return try {
+            Cipher.getInstance("AES/CBC/PKCS7Padding")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun getSecretKey(): SecretKey? {
+        return try {
+            val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
+            keyStore.getKey(KEY_NAME, null) as? SecretKey
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun isBiometricKeyInvalidated(): Boolean {
+        return try {
+            val secretKey = getSecretKey()
+            if (secretKey == null) {
+                generateSecretKey()
+                return false
+            }
+
+            val cipher = getCipher()
+            cipher?.init(Cipher.ENCRYPT_MODE, secretKey)
+
+            false // No exception means the key is still valid
+
+        } catch (e: KeyPermanentlyInvalidatedException) {
+            e.printStackTrace()
+            println("Key has been invalidated. Biometric enrollment might have changed.")
+            true
+
+        } catch (e: InvalidKeyException) {
+            e.printStackTrace()
+            true
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            true
         }
     }
 }

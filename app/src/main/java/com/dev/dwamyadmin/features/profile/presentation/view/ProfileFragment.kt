@@ -32,6 +32,7 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             greetingText.text = sharedPrefManager.getAdminName()
+            locationText.text = sharedPrefManager.getCityName()
             logoutButton.setOnClickListener{
                 findNavController().navigate(R.id.logoutDialogFragment)
             }
