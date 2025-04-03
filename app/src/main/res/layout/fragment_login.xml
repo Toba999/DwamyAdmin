@@ -116,7 +116,7 @@
         android:text="تسجيل الدخول باستخدام البصمة"
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/goToRegister" />
@@ -127,7 +127,7 @@
         android:layout_height="80dp"
         android:layout_marginTop="20dp"
         app:cardCornerRadius="12dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:backgroundTint="@color/primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

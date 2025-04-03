@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.dev.dwamyadmin.R
 import com.dev.dwamyadmin.databinding.FragmentLoginBinding
 import com.dev.dwamyadmin.features.login.presentation.viewModel.LoginViewModel
+import com.dev.dwamyadmin.utils.BiometricManager.generateKeyForBiometricAuthentication
 import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,12 +59,17 @@ class LoginFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.P)
     private fun checkForBiometricLogin() {
         val savedAdminId = sharedPrefManager.getAdminId()
+        val isBiometricEnabled = generateKeyForBiometricAuthentication()
 
-        if (!savedAdminId.isNullOrEmpty()) {
+        if (!savedAdminId.isNullOrEmpty() && isBiometricEnabled) {
             val biometricManager = BiometricManager.from(requireContext())
             if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) ==
                 BiometricManager.BIOMETRIC_SUCCESS) {
+                binding.fingerprintCard.isVisible = true
+                binding.fingerPrintText.isVisible = true
                 showBiometricPrompt()
+            }else{
+                showSnackBar( requireView(), "يرجي تفعيل تسجيل الدخول بالبصمة في جهازك", true)
             }
         }
     }
