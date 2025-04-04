@@ -5,11 +5,11 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Employee(
-    val id: String? = null,  // Firestore ID
-    val adminId: String = "",  // Links employee to their admin
+    val id: String? = null,
+    val adminId: String = "",
     val name: String = "",
     val email: String = "",
-    val password: String = "",  // Ensure secure storage in production!
+    val password: String = "",
     val workDays: String = "",
     val latitude : Double = 0.0,
     val longitude : Double = 0.0,
@@ -17,6 +17,7 @@ data class Employee(
     val imageUri : String = "",
     val area : Int = 100,
     val profession : String = "",
-    val startTime: Int = 9,  // Work start time (24-hour format)
-    val endTime: Int = 17   // Work end time (24-hour format)
+    val startTime: Int = 9,
+    val endTime: Int = 17,
+    val deviceId : String? = null
 ) : Parcelable
