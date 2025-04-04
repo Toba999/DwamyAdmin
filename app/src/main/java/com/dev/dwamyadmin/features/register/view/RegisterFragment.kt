@@ -104,6 +104,7 @@ class RegisterFragment : Fragment() {
             binding.locationArea.setText(it.area.toString())
             binding.timeRangeSlider.setValues(it.startTime.toFloat(), it.endTime.toFloat())
             binding.registerButton.text = "تعديل"
+            binding.registerTitle.text = "تعديل بيانات الموظف"
         }
     }
 
@@ -237,7 +238,18 @@ class RegisterFragment : Fragment() {
         return isValid
     }
 
+
     private fun showDaysPickerDialog() {
+        selectedDays.fill(false)
+        val currentText = binding.workDays.text.toString()
+        val selectedDayTexts = currentText.split(",").map { it.trim() }
+
+        for (i in daysOfWeek.indices) {
+            if (daysOfWeek[i] in selectedDayTexts) {
+                selectedDays[i] = true
+            }
+        }
+
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("اختر أيام الأسبوع")
             .setMultiChoiceItems(daysOfWeek, selectedDays) { _, which, isChecked ->
