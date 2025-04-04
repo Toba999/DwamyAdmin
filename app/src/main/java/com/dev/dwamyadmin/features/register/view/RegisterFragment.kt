@@ -92,6 +92,8 @@ class RegisterFragment : Fragment() {
             binding.uploadImgButton.visibility = View.GONE
             binding.uploadedImage.visibility = View.GONE
             binding.empProfession.visibility = View.GONE
+            binding.DeviceIdTitle.visibility = View.GONE
+            binding.DeviceIdCheckBox.visibility = View.GONE
             binding.registerTitle.text = "تسجيل حساب"
         }
         employee?.let {
@@ -105,6 +107,7 @@ class RegisterFragment : Fragment() {
             binding.timeRangeSlider.setValues(it.startTime.toFloat(), it.endTime.toFloat())
             binding.registerButton.text = "تعديل"
             binding.registerTitle.text = "تعديل بيانات الموظف"
+            binding.DeviceIdCheckBox.isChecked = it.deviceId != null
         }
     }
 
@@ -157,7 +160,9 @@ class RegisterFragment : Fragment() {
                         latitude ?: employee?.latitude ?:0.0,
                         longitude?: employee?.longitude ?:0.0,
                         binding.locationArea.text.toString().toInt(),
-                        employee?.id
+                        employee?.id,
+                        binding.DeviceIdCheckBox.isChecked,
+                        employee?.deviceId
                     )
                 }
             }

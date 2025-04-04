@@ -56,11 +56,14 @@ class RegisterViewModel @Inject constructor(
         latitude: Double,
         longitude: Double,
         area : Int,
-        id : String?
+        id : String?,
+        deviceIdCheck : Boolean,
+        deviceId: String?
     ) {
         viewModelScope.launch {
             _registerState.value = RegisterState.Loading
             try {
+                val deviceId = if (deviceIdCheck) deviceId else null
                 val success = repo.registerEmployee(
                     Employee(
                         id = id ?: "0",
@@ -76,7 +79,8 @@ class RegisterViewModel @Inject constructor(
                         longitude = longitude ,
                         address = address,
                         imageUri = imageUri,
-                        area = area
+                        area = area,
+                        deviceId = deviceId
                     )
                 )
                 _registerState.value =
