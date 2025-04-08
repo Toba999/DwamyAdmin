@@ -41,20 +41,14 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.sahana.horizontalcalendar.HorizontalCalendar
+    <com.labstyle.darioweekviewdatepicker.DarioWeekViewDatePicker
         android:id="@+id/calender_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolBarContainer"
-        app:setDateTextSize="20sp"
-        app:setIconsColor="@color/primary"
-        app:setMonthColor="@color/primary"
-        app:setMonthTextSize="17sp"
-        app:setSelectedBgColor="@color/primary"
-        app:setWeekTextSize="13sp" />
+        app:layout_constraintTop_toBottomOf="@+id/toolBarContainer" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

@@ -1,9 +1,7 @@
 package com.dev.dwamyadmin.features.reports.presentation.view
 
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -16,15 +14,13 @@ import com.dev.dwamyadmin.databinding.FragmentReportsBinding
 import com.dev.dwamyadmin.features.reports.presentation.viewModel.ReportsUiState
 import com.dev.dwamyadmin.features.reports.presentation.viewModel.ReportsViewModel
 import com.dev.dwamyadmin.utils.SharedPrefManager
-import com.sahana.horizontalcalendar.HorizontalCalendar
-import com.sahana.horizontalcalendar.model.DateModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import java.util.Locale
+import java.util.Date
 import javax.inject.Inject
 
 
@@ -35,8 +31,6 @@ class ReportsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var reportsAdapter: ReportsAdapter
-    private lateinit var horizontalCalendar: HorizontalCalendar
-    private lateinit var selectedDate: DateModel
 
     private val viewModel: ReportsViewModel by viewModels()
 
@@ -54,10 +48,8 @@ class ReportsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        selectedDate = getCurrentDateModel()
         val adminId = sharedPrefManager.getAdminId()
-        viewModel.getEmployeesByDate(formatDateModel(selectedDate), adminId.toString())
+        viewModel.getEmployeesByDate(formatDateModel(getCurrentDateModel()), adminId.toString())
         setupRecyclerView()
         setupCalendar()
         observeViewModel()
@@ -100,71 +92,31 @@ class ReportsFragment : Fragment() {
         }
     }
 
-    private fun simulateClickAt(view: View, x: Float, y: Float) {
-        val downTime = SystemClock.uptimeMillis()
-        val eventTime = SystemClock.uptimeMillis()
-
-        val motionEventDown = MotionEvent.obtain(
-            downTime,
-            eventTime,
-            MotionEvent.ACTION_DOWN,
-            x,
-            y,
-            0
-        )
-
-        val motionEventUp = MotionEvent.obtain(
-            downTime,
-            eventTime + 100,
-            MotionEvent.ACTION_UP,
-            x,
-            y,
-            0
-        )
-
-        view.dispatchTouchEvent(motionEventDown)
-        view.dispatchTouchEvent(motionEventUp)
-
-        motionEventDown.recycle()
-        motionEventUp.recycle()
-    }
-
     private fun setupRecyclerView() {
         reportsAdapter = ReportsAdapter(mutableListOf())
         binding.reportsRv.adapter = reportsAdapter
     }
 
     private fun setupCalendar() {
-        horizontalCalendar = binding.calenderView
-        horizontalCalendar.post {
-            val x = horizontalCalendar.width / 5f
-            val y = horizontalCalendar.height / 2f
-            simulateClickAt(horizontalCalendar, x, y)
-        }
-        horizontalCalendar.setOnDateSelectListener { dateModel ->
-            selectedDate = dateModel
+        binding.calenderView.onSelectionChanged = { date ->
             viewModel.getEmployeesByDate(
-                formatDateModel(selectedDate),
+                formatDateModel(date),
                 sharedPrefManager.getAdminId().toString()
             )
         }
     }
 
-    private fun getCurrentDateModel(): DateModel {
+    private fun getCurrentDateModel(): Date {
         val calendar = Calendar.getInstance()
-         val dateModel = DateModel().apply {
-             day = calendar.get(Calendar.DAY_OF_MONTH)
-             year = calendar.get(Calendar.YEAR)
-             monthNumber = calendar.get(Calendar.MONTH) + 1
-             month = SimpleDateFormat("MMM", Locale.getDefault()).format(calendar.time)
-             dayOfWeek = SimpleDateFormat("EEE", Locale.getDefault()).format(calendar.time)
-         }
-        return dateModel
+        return calendar.time
     }
 
-    private fun formatDateModel(dateModel: DateModel): String {
-        val date = LocalDate.of(dateModel.year, dateModel.monthNumber, dateModel.day)
-        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    private fun formatDateModel(selectedDate: Date): String {
+        val instant = selectedDate.toInstant()
+        val zoneId = ZoneId.systemDefault()
+        val localDate = instant.atZone(zoneId).toLocalDate()
+
+        return localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
     }
 
     private fun showLoading(isVisible: Boolean) {
