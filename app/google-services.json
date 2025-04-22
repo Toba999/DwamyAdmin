@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "847730338336",
-    "project_id": "dwamy-7727b",
-    "storage_bucket": "dwamy-7727b.firebasestorage.app"
+    "project_number": "578998389061",
+    "project_id": "dwamy-2408e",
+    "storage_bucket": "dwamy-2408e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:847730338336:android:e541a433664eb3cbd76a45",
+        "mobilesdk_app_id": "1:578998389061:android:a1cf15c98980b7988d162c",
         "android_client_info": {
           "package_name": "com.dev.dwamyadmin"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBkNhuK1UfNCd4PUZeM1F7iOYV16ewsrD0"
+          "current_key": "AIzaSyCSN6dpP2uncNbR8C_KhILlNar7WevyMIc"
         }
       ],
       "services": {
