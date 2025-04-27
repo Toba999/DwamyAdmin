@@ -24,4 +24,5 @@ interface FireBaseRepo {
     suspend fun getEmployeesByDate(date: String,adminId : String): List<Attendance>
     suspend fun deleteEmployee(employeeId: String): Boolean
     suspend fun uploadImage(imageUri: Uri): String?
+    suspend fun getAttendanceCountPerEmployeePerMonth(adminId: String): Map<Employee, Map<String, Int>>
 }

@@ -109,7 +109,15 @@
         android:id="@+id/reportsFragment"
         android:name="com.dev.dwamyadmin.features.reports.presentation.view.ReportsFragment"
         android:label="fragment_reports"
-        tools:layout="@layout/fragment_reports" />
+        tools:layout="@layout/fragment_reports" >
+        <action
+            android:id="@+id/action_reportsFragment_to_reportStatisticsFragment"
+            app:destination="@id/reportStatisticsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reportStatisticsFragment"
+        android:name="com.dev.dwamyadmin.features.reportStats.presentation.view.ReportStatisticsFragment"
+        android:label="ReportStatisticsFragment" />
 
 
 </navigation>

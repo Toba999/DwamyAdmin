@@ -25,6 +25,8 @@ import com.dev.dwamyadmin.utils.SharedPrefManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 class FireBaseRepoImpl @Inject constructor(
@@ -42,7 +44,8 @@ class FireBaseRepoImpl @Inject constructor(
     override suspend fun isEmailTaken(email: String): Boolean {
         return try {
             val adminQuery = adminsCollection.whereEqualTo(EMPLOYEE_EMAIL, email).get().await()
-            val employeeQuery = employeesCollection.whereEqualTo(EMPLOYEE_EMAIL, email).get().await()
+            val employeeQuery =
+                employeesCollection.whereEqualTo(EMPLOYEE_EMAIL, email).get().await()
             !adminQuery.isEmpty || !employeeQuery.isEmpty
         } catch (e: Exception) {
             e.printStackTrace()
@@ -74,7 +77,8 @@ class FireBaseRepoImpl @Inject constructor(
             }
 
             // Check if the employee with the same ID already exists
-            val existingEmployeeQuery = employeesCollection.whereEqualTo(ATTENDANCE_ID, employee.id).get().await()
+            val existingEmployeeQuery =
+                employeesCollection.whereEqualTo(ATTENDANCE_ID, employee.id).get().await()
 
             if (existingEmployeeQuery.isEmpty) {
                 // If no employee exists with the same ID, create a new one
@@ -111,9 +115,11 @@ class FireBaseRepoImpl @Inject constructor(
             false
         }
     }
+
     override suspend fun getLeaveRequestsByAdmin(adminId: String): List<LeaveRequest> {
         return try {
-            val querySnapshot = leaveRequestsCollection.whereEqualTo(ADMIN_ID, adminId).get().await()
+            val querySnapshot =
+                leaveRequestsCollection.whereEqualTo(ADMIN_ID, adminId).get().await()
             querySnapshot.documents.mapNotNull { it.toObject(LeaveRequest::class.java) }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -123,7 +129,8 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun getExcuseRequestsByAdmin(adminId: String): List<ExcuseRequest> {
         return try {
-            val querySnapshot = excuseRequestsCollection.whereEqualTo(ADMIN_ID, adminId).get().await()
+            val querySnapshot =
+                excuseRequestsCollection.whereEqualTo(ADMIN_ID, adminId).get().await()
             querySnapshot.documents.mapNotNull { it.toObject(ExcuseRequest::class.java) }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -133,7 +140,8 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun updateLeaveRequestStatus(requestId: String, status: LeaveStatus): Boolean {
         return try {
-            val querySnapshot = leaveRequestsCollection.whereEqualTo(ATTENDANCE_ID, requestId).get().await()
+            val querySnapshot =
+                leaveRequestsCollection.whereEqualTo(ATTENDANCE_ID, requestId).get().await()
             if (!querySnapshot.isEmpty) {
                 val document = querySnapshot.documents.first()
                 document.reference.update(ATTENDANCE_STATUS, status.name).await()
@@ -148,9 +156,13 @@ class FireBaseRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateExcuseRequestStatus(requestId: String, status: ExcuseStatus): Boolean {
+    override suspend fun updateExcuseRequestStatus(
+        requestId: String,
+        status: ExcuseStatus
+    ): Boolean {
         return try {
-            val querySnapshot = excuseRequestsCollection.whereEqualTo(ATTENDANCE_ID, requestId).get().await()
+            val querySnapshot =
+                excuseRequestsCollection.whereEqualTo(ATTENDANCE_ID, requestId).get().await()
             if (!querySnapshot.isEmpty) {
                 val document = querySnapshot.documents.first()
                 document.reference.update(ATTENDANCE_STATUS, status.name).await()
@@ -164,6 +176,7 @@ class FireBaseRepoImpl @Inject constructor(
             false
         }
     }
+
     override suspend fun getEmployeesByAdmin(adminId: String): List<Employee> {
         return try {
             val querySnapshot = employeesCollection.whereEqualTo(ADMIN_ID, adminId).get().await()
@@ -190,12 +203,14 @@ class FireBaseRepoImpl @Inject constructor(
 
     override suspend fun deleteEmployee(employeeId: String): Boolean {
         return try {
-            val leaveRequests = leaveRequestsCollection.whereEqualTo(EMPLOYEE_ID, employeeId).get().await()
+            val leaveRequests =
+                leaveRequestsCollection.whereEqualTo(EMPLOYEE_ID, employeeId).get().await()
             for (document in leaveRequests.documents) {
                 document.reference.delete().await()
             }
 
-            val excuseRequests = excuseRequestsCollection.whereEqualTo(EMPLOYEE_ID, employeeId).get().await()
+            val excuseRequests =
+                excuseRequestsCollection.whereEqualTo(EMPLOYEE_ID, employeeId).get().await()
             for (document in excuseRequests.documents) {
                 document.reference.delete().await()
             }
@@ -217,6 +232,49 @@ class FireBaseRepoImpl @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+
+    override suspend fun getAttendanceCountPerEmployeePerMonth(adminId: String): Map<Employee, Map<String, Int>> {
+        return try {
+            val attendanceSnapshot = attendanceCollection
+                .whereEqualTo(ADMIN_ID, adminId)
+                .get()
+                .await()
+
+            val attendanceList = attendanceSnapshot.documents.mapNotNull { it.toObject(Attendance::class.java) }
+
+            val employeeIds = attendanceList.map { it.employeeId }.distinct()
+
+            // Fetch employees info
+            val employeeMap = mutableMapOf<String, Employee>()
+            for (employeeId in employeeIds) {
+                val employeeSnapshot = employeesCollection.document(employeeId).get().await()
+                val employee = employeeSnapshot.toObject(Employee::class.java)
+                if (employee != null) {
+                    employeeMap[employeeId] = employee
+                }
+            }
+
+            val formatter = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+
+            // Group by Employee object
+            attendanceList.groupBy { attendance ->
+                employeeMap[attendance.employeeId]
+            }.filterKeys { it != null }
+                .mapValues { (_, attendances) ->
+                    attendances.groupBy { attendance ->
+                        formatter.format(
+                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(attendance.date)
+                                ?: attendance.date
+                        )
+                    }.mapValues { (_, monthAttendances) ->
+                        monthAttendances.size
+                    }
+                } as Map<Employee, Map<String, Int>>
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyMap()
         }
     }
 }

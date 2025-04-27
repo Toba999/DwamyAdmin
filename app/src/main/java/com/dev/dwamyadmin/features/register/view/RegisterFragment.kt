@@ -93,6 +93,7 @@ class RegisterFragment : Fragment() {
             binding.uploadedImage.visibility = View.GONE
             binding.empProfession.visibility = View.GONE
             binding.DeviceIdTitle.visibility = View.GONE
+            binding.locationArea.visibility = View.GONE
             binding.DeviceIdCheckBox.visibility = View.GONE
             binding.registerTitle.text = "تسجيل حساب"
         }
@@ -168,6 +169,10 @@ class RegisterFragment : Fragment() {
             }
         }
     }
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
+        return email.matches(emailRegex)
+    }
 
     private fun validateInputs(isAdmin: Boolean): Boolean {
         var isValid = true
@@ -192,7 +197,7 @@ class RegisterFragment : Fragment() {
         if (email.isEmpty()) {
             binding.adminEmail.error = "البريد الإلكتروني مطلوب"
             isValid = false
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        } else if (!isValidEmail(email)) {
             binding.adminEmail.error = "البريد الإلكتروني غير صالح"
             isValid = false
         } else {

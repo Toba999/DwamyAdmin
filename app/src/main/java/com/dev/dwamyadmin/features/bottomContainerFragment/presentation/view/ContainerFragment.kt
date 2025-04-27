@@ -59,6 +59,7 @@ class ContainerFragment : Fragment() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.reportsFragment,
+                R.id.reportStatisticsFragment,
                 R.id.employeeListFragment,
                 R.id.mapFragment,
                 R.id.successDialogFragment,

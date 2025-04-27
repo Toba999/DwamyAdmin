@@ -16,7 +16,6 @@ import com.dev.dwamyadmin.features.reports.presentation.viewModel.ReportsViewMod
 import com.dev.dwamyadmin.utils.SharedPrefManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -55,6 +54,9 @@ class ReportsFragment : Fragment() {
         observeViewModel()
         binding.reportBackBtn.setOnClickListener {
             findNavController().popBackStack()
+        }
+        binding.reportStateBtn.setOnClickListener {
+            findNavController().navigate(ReportsFragmentDirections.actionReportsFragmentToReportStatisticsFragment())
         }
     }
 
