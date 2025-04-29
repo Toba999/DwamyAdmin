@@ -23,9 +23,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.dev.dwamyadmin" />
-                  <option name="mobileSdkAppId" value="1:847730338336:android:e541a433664eb3cbd76a45" />
-                  <option name="projectId" value="dwamy-7727b" />
-                  <option name="projectNumber" value="847730338336" />
+                  <option name="mobileSdkAppId" value="1:578998389061:android:a1cf15c98980b7988d162c" />
+                  <option name="projectId" value="dwamy-2408e" />
+                  <option name="projectNumber" value="578998389061" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
