@@ -1,7 +1,5 @@
 package com.dev.dwamyadmin.domain.models
 
-
-
 data class LeaveRequest(
     val id: String = "",
     val employeeId: String = "",

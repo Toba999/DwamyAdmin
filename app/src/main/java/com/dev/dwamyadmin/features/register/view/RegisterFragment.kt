@@ -105,10 +105,15 @@ class RegisterFragment : Fragment() {
             binding.empProfession.setText(it.profession)
             binding.workDays.setText(it.workDays)
             binding.locationArea.setText(it.area.toString())
-            binding.timeRangeSlider.setValues(it.startTime.toFloat(), it.endTime.toFloat())
             binding.registerButton.text = "تعديل"
             binding.registerTitle.text = "تعديل بيانات الموظف"
             binding.DeviceIdCheckBox.isChecked = it.deviceId != null
+        }
+        if (employee != null) {
+            binding.timeRangeSlider.setValues(employee.startTime.toFloat(), employee.endTime.toFloat())
+            binding.timeTitle.text = "وقت العمل من ${formatTime(employee.startTime)} إلى ${formatTime(employee.endTime)}"
+        }else {
+            binding.timeRangeSlider.setValues(9f, 17f)
         }
     }
 
@@ -124,7 +129,6 @@ class RegisterFragment : Fragment() {
             findNavController().navigate(R.id.action_registerEmployeeFragment_to_mapFragment)
         }
 
-        binding.timeRangeSlider.setValues(9f, 17f)
         binding.timeRangeSlider.addOnChangeListener { slider, _, _ ->
             if (slider.values.size < 2) return@addOnChangeListener
             val values = slider.values

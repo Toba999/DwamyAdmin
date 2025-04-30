@@ -20,12 +20,6 @@ data class Attendance(
     val checkOutLng: Double = 0.0,
     val date: String = "",
     val startTime : String = "",
-    val endTime : String = "",
-    val status: AttendanceStatus? = null
+    val endTime : String = ""
 ) : Parcelable
 
-enum class AttendanceStatus {
-    PRESENT,
-    LATE,
-    EARLY_LEAVE
-}
